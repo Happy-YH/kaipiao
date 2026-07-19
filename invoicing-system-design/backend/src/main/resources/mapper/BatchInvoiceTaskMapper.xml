@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.invoice.mapper.BatchInvoiceTaskMapper">
+    <select id="selectAll" resultType="BatchInvoiceTask">
+        SELECT * FROM batch_invoice_task ORDER BY created_at DESC
+    </select>
+    <select id="selectById" parameterType="long" resultType="BatchInvoiceTask">
+        SELECT * FROM batch_invoice_task WHERE id = #{id}
+    </select>
+    <select id="selectByTaskNo" parameterType="string" resultType="BatchInvoiceTask">
+        SELECT * FROM batch_invoice_task WHERE task_no = #{taskNo}
+    </select>
+    <select id="selectByStatus" parameterType="string" resultType="BatchInvoiceTask">
+        SELECT * FROM batch_invoice_task WHERE status = #{status} ORDER BY created_at DESC
+    </select>
+    <insert id="insert" parameterType="BatchInvoiceTask" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO batch_invoice_task (task_no, task_name, task_type, status, total_count, success_count, fail_count, progress, created_by, finished_at)
+        VALUES (#{taskNo}, #{taskName}, #{taskType}, #{status}, #{totalCount}, #{successCount}, #{failCount}, #{progress}, #{createdBy}, #{finishedAt})
+    </insert>
+    <update id="update" parameterType="BatchInvoiceTask">
+        UPDATE batch_invoice_task SET
+            task_no = #{taskNo},
+            task_name = #{taskName},
+            task_type = #{taskType},
+            status = #{status},
+            total_count = #{totalCount},
+            success_count = #{successCount},
+            fail_count = #{failCount},
+            progress = #{progress},
+            created_by = #{createdBy},
+            finished_at = #{finishedAt}
+        WHERE id = #{id}
+    </update>
+</mapper>

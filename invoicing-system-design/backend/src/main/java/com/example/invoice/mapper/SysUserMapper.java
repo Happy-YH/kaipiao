@@ -1,0 +1,15 @@
+package com.example.invoice.mapper;
+
+import com.example.invoice.entity.SysUser;
+import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
+
+public interface SysUserMapper {
+    SysUser selectByUsername(@Param("username") String username);
+    SysUser selectById(@Param("id") Long id);
+    List<SysUser> selectAll();
+    int insert(SysUser user);
+    int update(SysUser user);
+    int deleteById(@Param("id") Long id);
+}

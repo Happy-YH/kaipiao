@@ -1,0 +1,145 @@
+<body class="login-body">
+<div class="login-wrap">
+  <aside class="login-aside">
+    <div class="la-grid" aria-hidden="true"></div>
+    <div class="la-top">
+      <span class="la-logo">
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 5h18v14H3z"/><path d="M3 9h18"/><path d="M8 14h4"/></svg>
+      </span>
+      <div class="la-brand">
+        <span class="la-name">金融贷款利息开票系统</span>
+        <span class="la-sub">Loan Interest e-Invoicing Platform</span>
+      </div>
+    </div>
+    <div class="la-mid">
+      <h2 class="la-headline">合规开票 · <span class="accent">数据可溯</span><br>贷款利息电子发票一站式管理</h2>
+      <ul class="la-points">
+        <li><i data-lucide="shield-check"></i><span>对接全电发票平台，发票真伪实时校验</span></li>
+        <li><i data-lucide="file-clock"></i><span>还款明细自动归集，开票申请一键提交</span></li>
+        <li><i data-lucide="chart-line"></i><span>开票趋势与税务台账可视化呈现</span></li>
+      </ul>
+    </div>
+    <div class="la-foot">
+      <span class="la-badge"><i data-lucide="lock-keyhole"></i> 国密 SM2 / SM4 加密传输</span>
+      <span class="la-copy">© 2026 金融贷款利息开票系统 · v1.0.0</span>
+    </div>
+  </aside>
+
+  <main class="login-main">
+    <div class="login-card">
+      <div class="lc-head">
+        <h1 class="lc-title">欢迎登录</h1>
+        <p class="lc-desc">请使用注册手机号登录系统</p>
+      </div>
+
+      <form class="lc-form" onsubmit="return false;">
+        <div class="form-field">
+          <label class="form-label">手机号</label>
+          <div class="phone-input">
+            <span class="phone-prefix">+86</span>
+            <input type="tel" class="input" placeholder="请输入 11 位手机号" value="138 8866 2024" inputmode="numeric">
+          </div>
+        </div>
+
+        <div class="form-field">
+          <label class="form-label">短信验证码</label>
+          <div class="code-input">
+            <input type="text" class="input" placeholder="请输入 6 位验证码" inputmode="numeric" value="••••••">
+            <button type="button" class="code-btn" id="codeBtn">获取验证码</button>
+          </div>
+          <span class="form-hint">验证码 5 分钟内有效，请勿泄露</span>
+        </div>
+
+        <div class="lc-row">
+          <label class="remember">
+            <input type="checkbox" class="checkbox" checked> 记住登录
+          </label>
+          <a class="btn-link" href="#" onclick="return false;">忘记账号？</a>
+        </div>
+
+        <label class="agree">
+          <input type="checkbox" class="checkbox" checked>
+          <span>我已阅读并同意 <a class="btn-link" href="#" onclick="return false;">《服务协议》</a> 与 <a class="btn-link" href="#" onclick="return false;">《隐私政策》</a></span>
+        </label>
+
+        <button type="submit" class="btn btn-primary lc-submit" data-dom-id="login-submit">
+          <i data-lucide="log-in"></i> 登 录
+        </button>
+      </form>
+
+      <div class="lc-foot">
+        <span class="lc-foot-text">还没有账号？</span>
+        <a class="btn-link" href="#" onclick="return false;">联系管理员开通</a>
+      </div>
+    </div>
+  </main>
+</div>
+
+<style>
+.login-body{margin:0;font-family:var(--fin-font-sans);background:var(--fin-background);background-image:var(--fin-grid-dot);background-size:var(--fin-grid-size) var(--fin-grid-size);color:var(--fin-foreground)}
+.login-wrap{display:flex;min-height:100vh}
+.login-aside{flex:0 0 46%;background:linear-gradient(160deg,var(--fin-primary-950) 0%,var(--fin-primary-800) 55%,var(--fin-primary-700) 100%);color:#fff;display:flex;flex-direction:column;justify-content:space-between;padding:40px 44px;position:relative;overflow:hidden}
+.login-aside::before{content:"";position:absolute;right:-120px;top:-120px;width:380px;height:380px;border-radius:50%;background:radial-gradient(circle,rgba(34,211,238,.28),transparent 70%)}
+.login-aside::after{content:"";position:absolute;left:-80px;bottom:-80px;width:260px;height:260px;border-radius:50%;background:radial-gradient(circle,rgba(6,182,212,.25),transparent 70%)}
+.la-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(34,211,238,.06) 1px,transparent 1px),linear-gradient(90deg,rgba(34,211,238,.06) 1px,transparent 1px);background-size:32px 32px;pointer-events:none;mask-image:radial-gradient(circle at 50% 50%,#000,transparent 75%);-webkit-mask-image:radial-gradient(circle at 50% 50%,#000,transparent 75%)}
+.la-top{display:flex;align-items:center;gap:12px;position:relative;z-index:1}
+.la-logo{width:42px;height:42px;border-radius:var(--fin-radius-md);background:var(--fin-gradient-tech-bright);backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center;color:#fff;border:1px solid rgba(34,211,238,.3);box-shadow:0 0 0 1px rgba(34,211,238,.2),0 6px 18px rgba(6,182,212,.4);position:relative}
+.la-logo::after{content:"";position:absolute;inset:0;border-radius:inherit;background:linear-gradient(135deg,rgba(255,255,255,.3),transparent 50%);pointer-events:none}
+.la-brand{display:flex;flex-direction:column}
+.la-name{font-size:16px;font-weight:600;color:#fff;line-height:1.3;letter-spacing:.01em}
+.la-sub{font-size:11px;color:var(--fin-tech-300);letter-spacing:.06em}
+.la-mid{position:relative;z-index:1}
+.la-headline{font-size:24px;font-weight:600;color:#fff;line-height:1.4;margin:0 0 24px;letter-spacing:.01em}
+.la-headline .accent{color:var(--fin-tech-400);text-shadow:0 0 12px var(--fin-tech-glow-soft)}
+.la-points{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:14px}
+.la-points li{display:flex;align-items:center;gap:10px;font-size:13.5px;color:rgba(255,255,255,.85)}
+.la-points li svg{width:18px;height:18px;color:var(--fin-tech-400);flex-shrink:0;filter:drop-shadow(0 0 4px var(--fin-tech-glow-soft))}
+.la-foot{display:flex;flex-direction:column;gap:10px;position:relative;z-index:1}
+.la-badge{display:inline-flex;align-items:center;gap:6px;font-size:12px;color:rgba(255,255,255,.75);padding:6px 10px;border:1px solid rgba(34,211,238,.2);border-radius:var(--fin-radius-md);width:fit-content;background:rgba(34,211,238,.05)}
+.la-badge svg{width:14px;height:14px;color:var(--fin-tech-400)}
+.la-copy{font-size:11.5px;color:rgba(255,255,255,.45)}
+
+.login-main{flex:1;display:flex;align-items:center;justify-content:center;padding:32px;background:var(--fin-background);background-image:var(--fin-grid-dot);background-size:var(--fin-grid-size) var(--fin-grid-size);position:relative}
+.login-main::before{content:"";position:absolute;right:-100px;top:-100px;width:300px;height:300px;border-radius:50%;background:radial-gradient(circle,rgba(6,182,212,.08),transparent 70%);pointer-events:none}
+.login-card{width:100%;max-width:400px;background:var(--fin-card);border:1px solid var(--fin-border);border-radius:var(--fin-radius-lg);padding:36px 34px;box-shadow:var(--fin-shadow-md),0 0 0 1px rgba(6,182,212,.06);position:relative;z-index:1}
+.lc-head{margin-bottom:24px}
+.lc-title{font-size:22px;font-weight:600;color:var(--fin-foreground);margin:0 0 6px;letter-spacing:.01em}
+.lc-desc{font-size:13px;color:var(--fin-muted-foreground);margin:0}
+.lc-form{display:flex;flex-direction:column;gap:16px}
+.form-field{display:flex;flex-direction:column;min-width:0}
+.form-label{font-size:12.5px;font-weight:500;color:var(--fin-foreground);margin-bottom:6px;letter-spacing:.02em}
+.form-hint{font-size:11.5px;color:var(--fin-muted-foreground);margin-top:5px}
+.input{height:38px;width:100%;padding:0 12px;border:1px solid var(--fin-input);border-radius:var(--fin-radius-md);background:var(--fin-card);color:var(--fin-foreground);font-size:13.5px;font-family:inherit;outline:none;transition:border-color .15s,box-shadow .15s}
+.input::placeholder{color:var(--fin-muted-foreground)}
+.input:focus{border-color:var(--fin-tech-500);box-shadow:0 0 0 3px var(--fin-tech-glow-soft)}
+.phone-input{display:flex;align-items:stretch}
+.phone-prefix{display:inline-flex;align-items:center;padding:0 12px;border:1px solid var(--fin-input);border-right:none;border-radius:var(--fin-radius-md) 0 0 var(--fin-radius-md);background:var(--fin-muted);color:var(--fin-foreground);font-size:13.5px;font-weight:500;font-family:var(--fin-font-mono)}
+.phone-input .input{border-radius:0 var(--fin-radius-md) var(--fin-radius-md) 0}
+.code-input{display:flex;gap:8px}
+.code-input .input{flex:1;letter-spacing:6px;text-align:center;font-weight:600;font-family:var(--fin-font-mono)}
+.code-btn{flex-shrink:0;height:38px;padding:0 14px;border:1px solid rgba(6,182,212,.3);background:rgba(6,182,212,.08);color:var(--fin-tech-600);border-radius:var(--fin-radius-md);font-size:12.5px;font-weight:500;cursor:pointer;white-space:nowrap;transition:all .15s}
+.code-btn:hover{background:rgba(6,182,212,.15);border-color:var(--fin-tech-400);box-shadow:var(--fin-shadow-glow-sm)}
+.code-btn.is-disabled{opacity:.6;cursor:not-allowed}
+.lc-row{display:flex;align-items:center;justify-content:space-between}
+.remember{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--fin-foreground);cursor:pointer}
+.checkbox{width:15px;height:15px;accent-color:var(--fin-tech-600);cursor:pointer}
+.btn-link{background:none;border:none;color:var(--fin-tech-600);font-size:13px;font-weight:500;padding:0;cursor:pointer;text-decoration:none;transition:color .15s}
+.btn-link:hover{text-decoration:underline;color:var(--fin-tech-500)}
+.agree{display:flex;align-items:flex-start;gap:8px;font-size:12px;color:var(--fin-muted-foreground);line-height:1.5;cursor:pointer}
+.agree .checkbox{margin-top:2px}
+.agree .btn-link{font-size:12px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;height:42px;padding:0 16px;border:1px solid transparent;border-radius:var(--fin-radius-md);font-size:14px;font-weight:600;font-family:inherit;cursor:pointer;transition:all .15s}
+.btn svg{width:17px;height:17px}
+.btn-primary{background:var(--fin-gradient-tech);color:#fff;border-color:var(--fin-primary-700);box-shadow:var(--fin-shadow-glow-primary)}
+.btn-primary:hover{background:var(--fin-gradient-tech-bright);border-color:var(--fin-tech-500);box-shadow:var(--fin-shadow-glow)}
+.lc-submit{margin-top:4px;letter-spacing:4px}
+.lc-foot{display:flex;align-items:center;justify-content:center;gap:6px;margin-top:22px;padding-top:18px;border-top:1px dashed var(--fin-border)}
+.lc-foot-text{font-size:12.5px;color:var(--fin-muted-foreground)}
+@media (max-width:900px){.login-aside{display:none}.login-main{padding:20px}}
+</style>
+<script>
+lucide.createIcons();
+(function(){var b=document.getElementById('codeBtn');if(!b)return;b.addEventListener('click',function(){if(b.classList.contains('is-disabled'))return;var n=60;b.classList.add('is-disabled');b.textContent=n+'s 后重发';var t=setInterval(function(){n--;if(n<=0){clearInterval(t);b.classList.remove('is-disabled');b.textContent='获取验证码'}else{b.textContent=n+'s 后重发'}},1000)})})();
+</script>
+</body>
+</html>

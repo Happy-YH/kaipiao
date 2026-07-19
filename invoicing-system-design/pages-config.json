@@ -1,0 +1,7 @@
+{
+  "login":            { "title": "登录",     "subtitle": "",                              "nav": "",       "body": "body-login.html",          "charts": false, "scripts": "" },
+  "home":             { "title": "工作台",   "subtitle": "贷款利息电子发票运营中心",      "nav": "home",   "body": "body-home.html",           "charts": true,  "scripts": "script-home-chart.html" },
+  "invoice-apply":    { "title": "开票申请", "subtitle": "选择还款记录提交开票",          "nav": "apply",  "body": "body-invoice-apply.html",  "charts": false, "scripts": "" },
+  "invoice-records":  { "title": "开票记录", "subtitle": "发票查询 / 红冲管理",           "nav": "records","body": "body-invoice-records.html","charts": false, "scripts": "" },
+  "manual-invoice":   { "title": "手工开票", "subtitle": "批量导入开票数据",              "nav": "manual", "body": "body-manual-invoice.html", "charts": false, "scripts": "" }
+}

@@ -1,0 +1,66 @@
+<body class="h-screen overflow-hidden" data-viewport-mode="app-shell">
+<div class="shell-root" data-nav-active="__NAV_ACTIVE__">
+  <aside class="sidebar">
+    <div class="sidebar-brand">
+      <span class="brand-mark" aria-hidden="true">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 5h18v14H3z"/><path d="M3 9h18"/><path d="M8 14h4"/></svg>
+      </span>
+      <div class="brand-text">
+        <span class="brand-name">开票管理系统</span>
+        <span class="brand-sub">贷款利息 · 电子发票</span>
+      </div>
+    </div>
+    <nav class="sidebar-nav" aria-label="主导航">
+      <a class="nav-item" data-nav-key="home" data-dom-id="nav-home" href="#" onclick="return false;">
+        <i data-lucide="layout-dashboard" class="nav-icon"></i>
+        <span class="nav-label">工作台</span>
+      </a>
+      <a class="nav-item" data-nav-key="apply" data-dom-id="nav-apply" href="#" onclick="return false;">
+        <i data-lucide="file-plus-2" class="nav-icon"></i>
+        <span class="nav-label">开票申请</span>
+      </a>
+      <a class="nav-item" data-nav-key="records" data-dom-id="nav-records" href="#" onclick="return false;">
+        <i data-lucide="receipt-text" class="nav-icon"></i>
+        <span class="nav-label">开票记录</span>
+      </a>
+      <a class="nav-item" data-nav-key="manual" data-dom-id="nav-manual" href="#" onclick="return false;">
+        <i data-lucide="file-pen-line" class="nav-icon"></i>
+        <span class="nav-label">手工开票</span>
+      </a>
+    </nav>
+    <div class="sidebar-foot">
+      <div class="foot-card">
+        <i data-lucide="shield-check" class="foot-icon"></i>
+        <div class="foot-text">
+          <span class="foot-title">税务合规已接入</span>
+          <span class="foot-sub">全电发票 · 实时校验</span>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <div class="main-area">
+    <header class="topbar">
+      <div class="topbar-left">
+        <h1 class="page-title">__PAGE_TITLE__</h1>
+        <span class="page-subtitle">__PAGE_SUBTITLE__</span>
+      </div>
+      <div class="topbar-right">
+        <div class="topbar-search">
+          <i data-lucide="search" class="search-icon"></i>
+          <input type="text" class="search-input" placeholder="搜索发票号 / 合同号 / 客户名称" aria-label="全局搜索">
+        </div>
+        <button class="icon-btn" title="待办" aria-label="待办"><i data-lucide="bell"></i><span class="dot"></span></button>
+        <button class="icon-btn" title="帮助" aria-label="帮助"><i data-lucide="circle-help"></i></button>
+        <div class="user-chip">
+          <span class="avatar">张</span>
+          <div class="user-meta">
+            <span class="user-name">张明华</span>
+            <span class="user-role">财务运营部</span>
+          </div>
+          <i data-lucide="chevron-down" class="user-caret"></i>
+        </div>
+      </div>
+    </header>
+
+    <main class="main-content" data-scroll-region="primary">

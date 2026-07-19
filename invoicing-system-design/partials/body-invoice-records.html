@@ -1,0 +1,117 @@
+<div class="stack-gap">
+  <!-- 查询条件 -->
+  <div class="card">
+    <div class="card-head"><h3 class="card-title"><span class="bar"></span>查询条件</h3></div>
+    <div class="card-body">
+      <div class="filter-grid">
+        <div class="form-field">
+          <label class="form-label">发票号</label>
+          <input type="text" class="input" placeholder="请输入发票号码">
+        </div>
+        <div class="form-field">
+          <label class="form-label">客户名称</label>
+          <input type="text" class="input" placeholder="请输入客户名称">
+        </div>
+        <div class="form-field">
+          <label class="form-label">合同号</label>
+          <input type="text" class="input" placeholder="请输入合同号">
+        </div>
+        <div class="form-field">
+          <label class="form-label">发票状态</label>
+          <select class="select"><option>全部</option><option>正常</option><option>已红冲</option><option>红冲中</option></select>
+        </div>
+        <div class="form-field">
+          <label class="form-label">开票项目</label>
+          <select class="select"><option>全部</option><option>贷款利息</option><option>手续费</option><option>担保费</option><option>违约金</option></select>
+        </div>
+        <div class="form-field">
+          <label class="form-label">开票日期</label>
+          <div class="date-range">
+            <input type="text" class="input" placeholder="开始日期" value="2026-06-19">
+            <span class="range-sep">~</span>
+            <input type="text" class="input" placeholder="结束日期" value="2026-07-19">
+          </div>
+        </div>
+        <div class="form-field">
+          <label class="form-label">开票方式</label>
+          <select class="select"><option>全部</option><option>系统开票</option><option>手工开票</option></select>
+        </div>
+        <div class="form-field">
+          <label class="form-label" style="visibility:hidden">操作</label>
+          <div class="filter-actions">
+            <button class="btn btn-primary btn-sm"><i data-lucide="search"></i> 查询</button>
+            <button class="btn btn-secondary btn-sm"><i data-lucide="rotate-ccw"></i> 重置</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 汇总 -->
+  <div class="summary-row">
+    <div class="sum-item"><span class="sum-label">发票总数</span><span class="sum-val">486 张</span></div>
+    <div class="sum-divider"></div>
+    <div class="sum-item"><span class="sum-label">开票金额合计</span><span class="sum-val">¥ 3,452,180.00</span></div>
+    <div class="sum-divider"></div>
+    <div class="sum-item"><span class="sum-label">正常发票</span><span class="sum-val sum-ok">472 张</span></div>
+    <div class="sum-divider"></div>
+    <div class="sum-item"><span class="sum-label">已红冲</span><span class="sum-val sum-err">7 张</span></div>
+    <div class="sum-divider"></div>
+    <div class="sum-item"><span class="sum-label">红冲中</span><span class="sum-val sum-warn">7 张</span></div>
+  </div>
+
+  <!-- 发票列表 -->
+  <div class="card">
+    <div class="card-head">
+      <h3 class="card-title"><span class="bar"></span>发票记录<span class="card-sub">共 486 条</span></h3>
+      <div class="card-head-actions">
+        <button class="btn btn-secondary btn-sm"><i data-lucide="download"></i> 导出</button>
+        <button class="btn btn-secondary btn-sm"><i data-lucide="printer"></i> 打印</button>
+      </div>
+    </div>
+    <div class="table-wrap">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>发票号</th><th>开票项目</th><th class="col-amount">开票金额</th><th>客户名称</th><th>合同号</th><th>开票方式</th><th>开票日期</th><th>发票状态</th><th class="col-actions">操作</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td class="col-num cell-link">24420000000123</td><td>贷款利息</td><td class="col-amount">¥ 86,500.00</td><td class="cell-main">恒泰贸易有限公司</td><td class="col-muted">HT2026-0712</td><td><span class="tag tag-plain">系统</span></td><td class="col-muted">2026-07-19</td><td><span class="tag tag-success">正常</span></td><td class="col-actions"><a class="btn-link" href="#" onclick="return false;">查看</a><a class="btn-link btn-danger-link" href="#" onclick="return false;">红冲</a></td></tr>
+          <tr><td class="col-num cell-link">24420000000122</td><td>贷款利息</td><td class="col-amount">¥ 132,000.00</td><td class="cell-main">瑞丰科技有限公司</td><td class="col-muted">RF2026-0688</td><td><span class="tag tag-plain">系统</span></td><td class="col-muted">2026-07-19</td><td><span class="tag tag-success">正常</span></td><td class="col-actions"><a class="btn-link" href="#" onclick="return false;">查看</a><a class="btn-link btn-danger-link" href="#" onclick="return false;">红冲</a></td></tr>
+          <tr><td class="col-num cell-link">24420000000121</td><td>手续费</td><td class="col-amount">¥ 3,200.00</td><td class="cell-main">宏远建设集团</td><td class="col-muted">HY2026-0701</td><td><span class="tag tag-plain">系统</span></td><td class="col-muted">2026-07-19</td><td><span class="tag tag-warning">红冲中</span></td><td class="col-actions"><a class="btn-link" href="#" onclick="return false;">查看</a><span class="link-disabled">红冲</span></td></tr>
+          <tr><td class="col-num cell-link">24420000000120</td><td>贷款利息</td><td class="col-amount">¥ 45,800.00</td><td class="cell-main">金海农业发展</td><td class="col-muted">JH2026-0695</td><td><span class="tag tag-plain">手工</span></td><td class="col-muted">2026-07-18</td><td><span class="tag tag-success">正常</span></td><td class="col-actions"><a class="btn-link" href="#" onclick="return false;">查看</a><a class="btn-link btn-danger-link" href="#" onclick="return false;">红冲</a></td></tr>
+          <tr><td class="col-num cell-link">24420000000119</td><td>贷款利息</td><td class="col-amount">¥ 28,600.00</td><td class="cell-main">正大商贸</td><td class="col-muted">ZD2026-0679</td><td><span class="tag tag-plain">系统</span></td><td class="col-muted">2026-07-18</td><td><span class="tag tag-error">已红冲</span></td><td class="col-actions"><a class="btn-link" href="#" onclick="return false;">查看</a><span class="link-disabled">红冲</span></td></tr>
+          <tr><td class="col-num cell-link">24420000000118</td><td>贷款利息</td><td class="col-amount">¥ 96,200.00</td><td class="cell-main">中信物流股份</td><td class="col-muted">ZX2026-0666</td><td><span class="tag tag-plain">系统</span></td><td class="col-muted">2026-07-17</td><td><span class="tag tag-success">正常</span></td><td class="col-actions"><a class="btn-link" href="#" onclick="return false;">查看</a><a class="btn-link btn-danger-link" href="#" onclick="return false;">红冲</a></td></tr>
+          <tr><td class="col-num cell-link">24420000000117</td><td>担保费</td><td class="col-amount">¥ 15,000.00</td><td class="cell-main">汇通投资</td><td class="col-muted">HT2026-0655</td><td><span class="tag tag-plain">手工</span></td><td class="col-muted">2026-07-17</td><td><span class="tag tag-success">正常</span></td><td class="col-actions"><a class="btn-link" href="#" onclick="return false;">查看</a><a class="btn-link btn-danger-link" href="#" onclick="return false;">红冲</a></td></tr>
+          <tr><td class="col-num cell-link">24420000000116</td><td>违约金</td><td class="col-amount">¥ 4,500.00</td><td class="cell-main">盛世餐饮</td><td class="col-muted">SS2026-0648</td><td><span class="tag tag-plain">系统</span></td><td class="col-muted">2026-07-16</td><td><span class="tag tag-success">正常</span></td><td class="col-actions"><a class="btn-link" href="#" onclick="return false;">查看</a><a class="btn-link btn-danger-link" href="#" onclick="return false;">红冲</a></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="pagination">
+      <span class="page-info">显示第 1-8 条 / 共 486 条</span>
+      <div class="page-controls">
+        <button class="page-btn is-disabled"><i data-lucide="chevron-left" style="width:14px;height:14px"></i></button>
+        <button class="page-btn is-active">1</button><button class="page-btn">2</button><button class="page-btn">3</button><button class="page-btn">4</button>
+        <span class="page-ellipsis">…</span>
+        <button class="page-btn">61</button>
+        <button class="page-btn"><i data-lucide="chevron-right" style="width:14px;height:14px"></i></button>
+        <div class="page-jump">前往 <input type="text" class="input" value="1"> 页</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+.summary-row{display:flex;align-items:center;gap:0;background:var(--fin-card);border:1px solid var(--fin-border);border-radius:var(--fin-radius-lg);padding:14px 22px;box-shadow:var(--fin-shadow-sm);flex-wrap:wrap}
+.sum-item{display:flex;flex-direction:column;gap:3px;padding:0 20px;min-width:0}
+.sum-label{font-size:12px;color:var(--fin-muted-foreground);font-weight:500;white-space:nowrap}
+.sum-val{font-size:16px;font-weight:600;color:var(--fin-foreground);font-family:var(--fin-font-mono);white-space:nowrap}
+.sum-ok{color:var(--fin-state-success)}.sum-err{color:var(--fin-state-error)}.sum-warn{color:var(--fin-state-warning)}
+.sum-divider{width:1px;height:28px;background:var(--fin-border)}
+.btn-danger-link{color:var(--fin-state-error)!important}
+.btn-danger-link:hover{color:var(--fin-state-error);text-decoration:underline}
+.link-disabled{color:var(--fin-muted-foreground);opacity:.5;cursor:not-allowed;margin-left:10px;font-size:13px}
+.page-ellipsis{color:var(--fin-muted-foreground);padding:0 2px}
+@media (max-width:1100px){.summary-row{gap:12px}.sum-divider{display:none}.sum-item{padding:4px 0}}
+</style>

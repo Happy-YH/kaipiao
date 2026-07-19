@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.invoice.mapper.InvoiceMapper">
+    <select id="selectAll" resultType="Invoice">
+        SELECT * FROM invoice ORDER BY created_at DESC
+    </select>
+    <select id="selectById" parameterType="long" resultType="Invoice">
+        SELECT * FROM invoice WHERE id = #{id}
+    </select>
+    <select id="selectByInvoiceNo" parameterType="string" resultType="Invoice">
+        SELECT * FROM invoice WHERE invoice_no = #{invoiceNo}
+    </select>
+    <select id="selectByCustomerId" parameterType="long" resultType="Invoice">
+        SELECT * FROM invoice WHERE customer_id = #{customerId} ORDER BY created_at DESC
+    </select>
+    <select id="selectByStatus" parameterType="string" resultType="Invoice">
+        SELECT * FROM invoice WHERE status = #{status} ORDER BY created_at DESC
+    </select>
+    <select id="selectByInvoiceKind" parameterType="string" resultType="Invoice">
+        SELECT * FROM invoice WHERE invoice_kind = #{invoiceKind} ORDER BY created_at DESC
+    </select>
+    <select id="selectByOriginalInvoiceId" parameterType="long" resultType="Invoice">
+        SELECT * FROM invoice WHERE original_invoice_id = #{originalInvoiceId} ORDER BY created_at DESC
+    </select>
+    <insert id="insert" parameterType="Invoice" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO invoice (invoice_no, invoice_code, invoice_type, invoice_kind, customer_id, total_amount, tax_amount, taxable_amount, status, red_confirmation_no, original_invoice_id, remark, issue_date, created_by)
+        VALUES (#{invoiceNo}, #{invoiceCode}, #{invoiceType}, #{invoiceKind}, #{customerId}, #{totalAmount}, #{taxAmount}, #{taxableAmount}, #{status}, #{redConfirmationNo}, #{originalInvoiceId}, #{remark}, #{issueDate}, #{createdBy})
+    </insert>
+    <update id="update" parameterType="Invoice">
+        UPDATE invoice SET
+            invoice_no = #{invoiceNo},
+            invoice_code = #{invoiceCode},
+            invoice_type = #{invoiceType},
+            invoice_kind = #{invoiceKind},
+            customer_id = #{customerId},
+            total_amount = #{totalAmount},
+            tax_amount = #{taxAmount},
+            taxable_amount = #{taxableAmount},
+            status = #{status},
+            red_confirmation_no = #{redConfirmationNo},
+            original_invoice_id = #{originalInvoiceId},
+            remark = #{remark},
+            issue_date = #{issueDate},
+            created_by = #{createdBy}
+        WHERE id = #{id}
+    </update>
+    <select id="countByMonthAndKind" resultType="int">
+        SELECT COUNT(*) FROM invoice
+        WHERE DATE_FORMAT(issue_date, '%Y-%m') = #{month}
+        AND invoice_kind = #{kind}
+        AND status IN ('ISSUED', 'DELIVERED', 'RED_CANCELLED')
+    </select>
+    <select id="sumAmountByMonthAndKind" resultType="java.math.BigDecimal">
+        SELECT COALESCE(SUM(total_amount), 0) FROM invoice
+        WHERE DATE_FORMAT(issue_date, '%Y-%m') = #{month}
+        AND invoice_kind = #{kind}
+        AND status IN ('ISSUED', 'DELIVERED', 'RED_CANCELLED')
+    </select>
+    <select id="countAll" resultType="int">
+        SELECT COUNT(*) FROM invoice
+    </select>
+    <select id="sumAmountByKind" resultType="java.math.BigDecimal">
+        SELECT COALESCE(SUM(total_amount), 0) FROM invoice
+        WHERE invoice_kind = #{kind}
+        AND status IN ('ISSUED', 'DELIVERED', 'RED_CANCELLED')
+    </select>
+    <select id="countByStatus" resultType="int">
+        SELECT COUNT(*) FROM invoice WHERE status = #{status}
+    </select>
+
+    <select id="selectCustomerSummary" resultType="java.util.Map">
+        SELECT
+            c.id AS customerId,
+            c.customer_name AS customerName,
+            COUNT(i.id) AS invoiceCount,
+            COALESCE(SUM(CASE WHEN i.invoice_kind = 'BLUE' AND i.status IN ('ISSUED','DELIVERED') THEN i.total_amount ELSE 0 END), 0) AS blueAmount,
+            COALESCE(SUM(CASE WHEN i.invoice_kind = 'RED' THEN i.total_amount ELSE 0 END), 0) AS redAmount
+        FROM invoice i
+        LEFT JOIN customer c ON i.customer_id = c.id
+        WHERE i.status IN ('ISSUED','DELIVERED','RED_CANCELLED')
+        GROUP BY c.id, c.customer_name
+        ORDER BY blueAmount DESC
+        LIMIT #{limit}
+    </select>
+
+    <select id="selectByCondition" resultType="Invoice">
+        SELECT i.* FROM invoice i
+        <where>
+            <if test="status != null and status != ''">
+                AND i.status = #{status}
+            </if>
+            <if test="startDate != null and startDate != ''">
+                AND i.issue_date &gt;= #{startDate}
+            </if>
+            <if test="endDate != null and endDate != ''">
+                AND i.issue_date &lt;= #{endDate}
+            </if>
+            <if test="contractNo != null and contractNo != ''">
+                AND i.id IN (SELECT invoice_id FROM invoice_detail WHERE contract_no LIKE CONCAT('%', #{contractNo}, '%'))
+            </if>
+            <if test="invoiceType != null and invoiceType != ''">
+                AND i.invoice_type = #{invoiceType}
+            </if>
+        </where>
+        ORDER BY i.created_at DESC
+        LIMIT #{offset}, #{limit}
+    </select>
+</mapper>

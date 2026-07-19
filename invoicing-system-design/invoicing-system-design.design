@@ -1,0 +1,184 @@
+{
+  "data": [
+    {
+      "id": "page-login",
+      "title": "登录",
+      "type": "page",
+      "version": 1,
+      "createdAt": 1784500000000,
+      "canvasData": {
+        "x": 0,
+        "y": 0,
+        "group": 0
+      },
+      "devMetadata": {
+        "htmlSrc": "pages/login.html",
+        "interactions": [
+          {
+            "domId": "login-submit",
+            "targetPageId": "page-home",
+            "transitionLabel": "登录成功"
+          }
+        ]
+      }
+    },
+    {
+      "id": "page-home",
+      "title": "工作台",
+      "type": "page",
+      "version": 1,
+      "createdAt": 1784500000000,
+      "canvasData": {
+        "x": 516,
+        "y": 12,
+        "group": 0
+      },
+      "devMetadata": {
+        "htmlSrc": "pages/home.html",
+        "interactions": [
+          {
+            "domId": "cta-apply",
+            "targetPageId": "page-invoice-apply",
+            "transitionLabel": "立即开票"
+          },
+          {
+            "domId": "link-records-home",
+            "targetPageId": "page-invoice-records",
+            "transitionLabel": "查看开票记录"
+          },
+          {
+            "domId": "nav-apply",
+            "targetPageId": "page-invoice-apply",
+            "hideEdge": true,
+            "transitionLabel": "开票申请"
+          },
+          {
+            "domId": "nav-records",
+            "targetPageId": "page-invoice-records",
+            "hideEdge": true,
+            "transitionLabel": "开票记录"
+          },
+          {
+            "domId": "nav-manual",
+            "targetPageId": "page-manual-invoice",
+            "hideEdge": true,
+            "transitionLabel": "手工开票"
+          }
+        ]
+      }
+    },
+    {
+      "id": "page-invoice-apply",
+      "title": "开票申请",
+      "type": "page",
+      "version": 1,
+      "createdAt": 1784500000000,
+      "canvasData": {
+        "x": 1128,
+        "y": 12,
+        "group": 0
+      },
+      "devMetadata": {
+        "htmlSrc": "pages/invoice-apply.html",
+        "interactions": [
+          {
+            "domId": "nav-home",
+            "targetPageId": "page-home",
+            "hideEdge": true,
+            "transitionLabel": "工作台"
+          },
+          {
+            "domId": "nav-records",
+            "targetPageId": "page-invoice-records",
+            "hideEdge": true,
+            "transitionLabel": "开票记录"
+          },
+          {
+            "domId": "nav-manual",
+            "targetPageId": "page-manual-invoice",
+            "hideEdge": true,
+            "transitionLabel": "手工开票"
+          }
+        ]
+      }
+    },
+    {
+      "id": "page-invoice-records",
+      "title": "开票记录",
+      "type": "page",
+      "version": 1,
+      "createdAt": 1784500000000,
+      "canvasData": {
+        "x": 1092,
+        "y": 396,
+        "group": 0
+      },
+      "devMetadata": {
+        "htmlSrc": "pages/invoice-records.html",
+        "interactions": [
+          {
+            "domId": "nav-home",
+            "targetPageId": "page-home",
+            "hideEdge": true,
+            "transitionLabel": "工作台"
+          },
+          {
+            "domId": "nav-apply",
+            "targetPageId": "page-invoice-apply",
+            "hideEdge": true,
+            "transitionLabel": "开票申请"
+          },
+          {
+            "domId": "nav-manual",
+            "targetPageId": "page-manual-invoice",
+            "hideEdge": true,
+            "transitionLabel": "手工开票"
+          }
+        ]
+      }
+    },
+    {
+      "id": "page-manual-invoice",
+      "title": "手工开票",
+      "type": "page",
+      "version": 1,
+      "createdAt": 1784500000000,
+      "canvasData": {
+        "x": 96,
+        "y": 1272,
+        "group": 0
+      },
+      "devMetadata": {
+        "htmlSrc": "pages/manual-invoice.html",
+        "interactions": [
+          {
+            "domId": "nav-home",
+            "targetPageId": "page-home",
+            "hideEdge": true,
+            "transitionLabel": "工作台"
+          },
+          {
+            "domId": "nav-apply",
+            "targetPageId": "page-invoice-apply",
+            "hideEdge": true,
+            "transitionLabel": "开票申请"
+          },
+          {
+            "domId": "nav-records",
+            "targetPageId": "page-invoice-records",
+            "hideEdge": true,
+            "transitionLabel": "开票记录"
+          }
+        ]
+      }
+    }
+  ],
+  "config": {
+    "autoLayout": false,
+    "deviceType": "desktop",
+    "projectName": "金融贷款利息开票系统",
+    "designLibrary": null,
+    "showEdge": true,
+    "visualEditorEnabled": false
+  }
+}

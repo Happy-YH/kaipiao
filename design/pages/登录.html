@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="zh-CN" class="light" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>登录 · 金融贷款利息开票系统</title>
+<style id="theme-vars">
+/* ============================================================
+   金融贷款利息开票系统 — 品牌设计令牌
+   Brand: fin  |  Mode: light/dark  |  Style: 严谨商务 / 简化
+   主色: 深靛蓝(机构信任)  |  中性: 冷灰  |  圆角: 克制(4/6/8px)
+   ============================================================ */
+
+:root {
+  /* ---- 主色: 深靛蓝 机构级信任色阶 ---- */
+  --fin-primary-50:  #eef3fb;
+  --fin-primary-100: #dbe5f5;
+  --fin-primary-200: #b8c9e9;
+  --fin-primary-300: #8da6d8;
+  --fin-primary-400: #5d7fc4;
+  --fin-primary-500: #3a5dac;
+  --fin-primary-600: #2a4793;  /* 主交互色 */
+  --fin-primary-700: #1f3a7a;
+  --fin-primary-800: #1a2f63;
+  --fin-primary-900: #15233d;
+  --fin-primary-950: #0d1626;
+
+  /* ---- 语义别名(被 fill-html-head 识别) ---- */
+  --fin-background: #f4f6fa;            /* 应用画布 冷灰底 */
+  --fin-foreground: #1a2233;            /* 主文本 近黑石板 */
+  --fin-card: #ffffff;                  /* 卡片/面板 白 */
+  --fin-card-foreground: #1a2233;
+  --fin-popover: #ffffff;
+  --fin-popover-foreground: #1a2233;
+  --fin-primary: var(--fin-primary-700);/* 严谨深靛蓝 默认主色 */
+  --fin-primary-foreground: #ffffff;
+  --fin-secondary: #eef1f7;
+  --fin-secondary-foreground: #2a3450;
+  --fin-muted: #f1f4f9;                 /* 表格条纹/弱底 */
+  --fin-muted-foreground: #5b6677;      /* 次级文本 */
+  --fin-accent: var(--fin-primary-50);
+  --fin-accent-foreground: var(--fin-primary-800);
+  --fin-destructive: #b91c1c;
+  --fin-destructive-foreground: #ffffff;
+  --fin-border: #e3e8f0;                /* 细分隔线 */
+  --fin-input: #cdd5e1;                 /* 输入框描边 */
+  --fin-ring: var(--fin-primary-600);
+
+  /* ---- 状态色(业务标签) ---- */
+  --fin-state-success: #15803d;
+  --fin-state-success-foreground: #ffffff;
+  --fin-state-success-bg: #e6f3ea;
+  --fin-state-warning: #b45309;
+  --fin-state-warning-foreground: #ffffff;
+  --fin-state-warning-bg: #fbf0dd;
+  --fin-state-error: #b91c1c;
+  --fin-state-error-foreground: #ffffff;
+  --fin-state-error-bg: #fbe7e7;
+  --fin-state-info: var(--fin-primary-700);
+  --fin-state-info-bg: var(--fin-primary-50);
+  --fin-state-neutral: #475569;
+  --fin-state-neutral-bg: #eef1f6;
+
+  /* ---- 侧边栏(深色品牌栏 提升层级) ---- */
+  --fin-sidebar: #15233d;
+  --fin-sidebar-foreground: #c8d3e6;
+  --fin-sidebar-primary: #ffffff;
+  --fin-sidebar-primary-foreground: var(--fin-primary-700);
+  --fin-sidebar-accent: #1f3358;
+  --fin-sidebar-accent-foreground: #ffffff;
+
+  /* ---- 图表色阶(克制商务) ---- */
+  --fin-chart-1: var(--fin-primary-600);
+  --fin-chart-2: #4d8a9e;
+  --fin-chart-3: #c08a3e;
+  --fin-chart-4: #6b7c93;
+  --fin-chart-5: #9e7bb0;
+
+  /* ---- 圆角(克制) ---- */
+  --fin-radius-sm: 4px;
+  --fin-radius-md: 6px;
+  --fin-radius-lg: 8px;
+  --fin-radius-xl: 10px;
+
+  /* ---- 阴影(扁平低饱和) ---- */
+  --fin-shadow-sm: 0 1px 2px rgba(15, 31, 66, 0.06);
+  --fin-shadow-md: 0 2px 8px rgba(15, 31, 66, 0.08);
+  --fin-shadow-lg: 0 6px 20px rgba(15, 31, 66, 0.12);
+
+  /* ---- 间距基准 ---- */
+  --fin-space-1: 4px;
+  --fin-space-2: 8px;
+  --fin-space-3: 12px;
+  --fin-space-4: 16px;
+  --fin-space-5: 24px;
+  --fin-space-6: 32px;
+
+  /* ---- 排版 ---- */
+  --fin-font-sans: "PingFang SC", "Microsoft YaHei", "Helvetica Neue", "Segoe UI", system-ui, -apple-system, "Hiragino Sans GB", sans-serif;
+  --fin-font-mono: "JetBrains Mono", "SF Mono", "Cascadia Code", Consolas, monospace;
+  --fin-font-size-xs: 12px;
+  --fin-font-size-sm: 13px;
+  --fin-font-size-base: 14px;   /* 中后台基准 */
+  --fin-font-size-md: 15px;
+  --fin-font-size-lg: 16px;
+  --fin-font-size-xl: 18px;
+  --fin-font-size-2xl: 22px;
+  --fin-line-tight: 1.35;
+  --fin-line-base: 1.55;
+  --fin-weight-regular: 400;
+  --fin-weight-medium: 500;
+  --fin-weight-semibold: 600;
+  --fin-weight-bold: 700;
+}
+
+/* ---- 暗色模式 ---- */
+.dark {
+  --fin-background: #0e1626;
+  --fin-foreground: #e4e9f2;
+  --fin-card: #161f33;
+  --fin-card-foreground: #e4e9f2;
+  --fin-popover: #1a2438;
+  --fin-popover-foreground: #e4e9f2;
+  --fin-primary: #5d80c4;
+  --fin-primary-foreground: #0e1626;
+  --fin-secondary: #1f2a42;
+  --fin-secondary-foreground: #c8d3e6;
+  --fin-muted: #1a2336;
+  --fin-muted-foreground: #94a2b8;
+  --fin-accent: #1f2a42;
+  --fin-accent-foreground: #c8d3e6;
+  --fin-destructive: #f87171;
+  --fin-destructive-foreground: #1a2233;
+  --fin-border: #243049;
+  --fin-input: #2e3c5a;
+  --fin-ring: #5d80c4;
+
+  --fin-state-success: #34d399;
+  --fin-state-success-bg: #11261c;
+  --fin-state-warning: #fbbf24;
+  --fin-state-warning-bg: #2a1f0a;
+  --fin-state-error: #f87171;
+  --fin-state-error-bg: #2a1414;
+  --fin-state-info-bg: #16233f;
+  --fin-state-neutral-bg: #1f2a42;
+
+  --fin-sidebar: #0b1322;
+  --fin-sidebar-foreground: #94a2b8;
+  --fin-sidebar-accent: #1a2438;
+
+  --fin-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+  --fin-shadow-md: 0 2px 8px rgba(0, 0, 0, 0.4);
+  --fin-shadow-lg: 0 6px 20px rgba(0, 0, 0, 0.5);
+}
+
+/* ============================================================
+   排版类(.fin-*)
+   ============================================================ */
+.fin-h1 { font-family: var(--fin-font-sans); font-size: var(--fin-font-size-2xl); font-weight: var(--fin-weight-semibold); line-height: var(--fin-line-tight); color: var(--fin-foreground); letter-spacing: -0.01em; }
+.fin-h2 { font-family: var(--fin-font-sans); font-size: var(--fin-font-size-xl); font-weight: var(--fin-weight-semibold); line-height: var(--fin-line-tight); color: var(--fin-foreground); }
+.fin-h3 { font-family: var(--fin-font-sans); font-size: var(--fin-font-size-lg); font-weight: var(--fin-weight-semibold); line-height: var(--fin-line-tight); color: var(--fin-foreground); }
+.fin-h4 { font-family: var(--fin-font-sans); font-size: var(--fin-font-size-md); font-weight: var(--fin-weight-semibold); line-height: var(--fin-line-tight); color: var(--fin-foreground); }
+.fin-body { font-family: var(--fin-font-sans); font-size: var(--fin-font-size-base); font-weight: var(--fin-weight-regular); line-height: var(--fin-line-base); color: var(--fin-foreground); }
+.fin-body-sm { font-family: var(--fin-font-sans); font-size: var(--fin-font-size-sm); font-weight: var(--fin-weight-regular); line-height: var(--fin-line-base); color: var(--fin-foreground); }
+.fin-caption { font-family: var(--fin-font-sans); font-size: var(--fin-font-size-xs); font-weight: var(--fin-weight-regular); line-height: var(--fin-line-base); color: var(--fin-muted-foreground); }
+.fin-label { font-family: var(--fin-font-sans); font-size: var(--fin-font-size-sm); font-weight: var(--fin-weight-medium); line-height: var(--fin-line-tight); color: var(--fin-foreground); }
+.fin-mono { font-family: var(--fin-font-mono); font-size: var(--fin-font-size-sm); font-weight: var(--fin-weight-medium); }
+
+/* ---- 基础元素 ---- */
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  font-family: var(--fin-font-sans);
+  font-size: var(--fin-font-size-base);
+  line-height: var(--fin-line-base);
+  color: var(--fin-foreground);
+  background-color: var(--fin-background);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+* { box-sizing: border-box; }
+::selection { background: var(--fin-primary-200); color: var(--fin-primary-900); }
+
+/* 滚动条(克制商务) */
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--fin-border); border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: var(--fin-muted-foreground); }
+
+</style>
+<style type="text/tailwindcss">
+@theme inline {
+  --color-background: var(--fin-background);
+  --color-foreground: var(--fin-foreground);
+  --color-card: var(--fin-card);
+  --color-card-foreground: var(--fin-card-foreground);
+  --color-popover: var(--fin-popover);
+  --color-popover-foreground: var(--fin-popover-foreground);
+  --color-primary: var(--fin-primary);
+  --color-primary-foreground: var(--fin-primary-foreground);
+  --color-secondary: var(--fin-secondary);
+  --color-secondary-foreground: var(--fin-secondary-foreground);
+  --color-muted: var(--fin-muted);
+  --color-muted-foreground: var(--fin-muted-foreground);
+  --color-accent: var(--fin-accent);
+  --color-accent-foreground: var(--fin-accent-foreground);
+  --color-destructive: var(--fin-destructive);
+  --color-destructive-foreground: var(--fin-destructive-foreground);
+  --color-border: var(--fin-border);
+  --color-input: var(--fin-input);
+  --color-ring: var(--fin-ring);
+  --color-chart-1: var(--fin-chart-1);
+  --color-chart-2: var(--fin-chart-2);
+  --color-chart-3: var(--fin-chart-3);
+  --color-chart-4: var(--fin-chart-4);
+  --color-chart-5: var(--fin-chart-5);
+  --color-sidebar: var(--fin-sidebar);
+  --color-sidebar-foreground: var(--fin-sidebar-foreground);
+  --color-sidebar-primary: var(--fin-sidebar-primary);
+  --color-sidebar-primary-foreground: var(--fin-sidebar-primary-foreground);
+  --color-sidebar-accent: var(--fin-sidebar-accent);
+  --color-sidebar-accent-foreground: var(--fin-sidebar-accent-foreground);
+  --radius-sm: var(--fin-radius-sm);
+  --radius-md: var(--fin-radius-md);
+  --radius-lg: var(--fin-radius-lg);
+  --radius-xl: var(--fin-radius-xl);
+}
+</style>
+<style id="semantic-token-fallback">
+.bg-background{background-color:var(--fin-background)}.text-background{color:var(--fin-background)}.border-background{border-color:var(--fin-background)}
+.bg-foreground{background-color:var(--fin-foreground)}.text-foreground{color:var(--fin-foreground)}.border-foreground{border-color:var(--fin-foreground)}
+.bg-card{background-color:var(--fin-card)}.text-card{color:var(--fin-card)}.border-card{border-color:var(--fin-card)}
+.bg-card-foreground{background-color:var(--fin-card-foreground)}.text-card-foreground{color:var(--fin-card-foreground)}
+.bg-popover{background-color:var(--fin-popover)}.text-popover-foreground{color:var(--fin-popover-foreground)}
+.bg-primary{background-color:var(--fin-primary)}.text-primary{color:var(--fin-primary)}.border-primary{border-color:var(--fin-primary)}.ring-primary{--tw-ring-color:var(--fin-primary)}
+.bg-primary-foreground{background-color:var(--fin-primary-foreground)}.text-primary-foreground{color:var(--fin-primary-foreground)}
+.bg-secondary{background-color:var(--fin-secondary)}.text-secondary{color:var(--fin-secondary)}.border-secondary{border-color:var(--fin-secondary)}
+.bg-muted{background-color:var(--fin-muted)}.text-muted{color:var(--fin-muted)}.border-muted{border-color:var(--fin-muted)}
+.bg-muted-foreground{background-color:var(--fin-muted-foreground)}.text-muted-foreground{color:var(--fin-muted-foreground)}
+.bg-accent{background-color:var(--fin-accent)}.text-accent{color:var(--fin-accent)}.border-accent{border-color:var(--fin-accent)}
+.bg-destructive{background-color:var(--fin-destructive)}.text-destructive{color:var(--fin-destructive)}.border-destructive{border-color:var(--fin-destructive)}
+.bg-border{background-color:var(--fin-border)}.border-border{border-color:var(--fin-border)}
+.bg-input{background-color:var(--fin-input)}.border-input{border-color:var(--fin-input)}
+.bg-sidebar{background-color:var(--fin-sidebar)}.bg-sidebar-accent{background-color:var(--fin-sidebar-accent)}
+</style>
+<script src="https://unpkg.com/@tailwindcss/browser@4"></script>
+<script src="https://unpkg.com/lucide@latest"></script>
+
+</head>
+<body class="login-body">
+<div class="login-wrap">
+  <aside class="login-aside">
+    <div class="la-top">
+      <span class="la-logo">
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 5h18v14H3z"/><path d="M3 9h18"/><path d="M8 14h4"/></svg>
+      </span>
+      <div class="la-brand">
+        <span class="la-name">金融贷款利息开票系统</span>
+        <span class="la-sub">Loan Interest e-Invoicing Platform</span>
+      </div>
+    </div>
+    <div class="la-mid">
+      <h2 class="la-headline">合规开票 · 数据可溯<br>贷款利息电子发票一站式管理</h2>
+      <ul class="la-points">
+        <li><i data-lucide="shield-check"></i><span>对接全电发票平台，发票真伪实时校验</span></li>
+        <li><i data-lucide="file-clock"></i><span>还款明细自动归集，开票申请一键提交</span></li>
+        <li><i data-lucide="chart-line"></i><span>开票趋势与税务台账可视化呈现</span></li>
+      </ul>
+    </div>
+    <div class="la-foot">
+      <span class="la-badge"><i data-lucide="lock-keyhole"></i> 国密 SM2 / SM4 加密传输</span>
+      <span class="la-copy">© 2026 金融贷款利息开票系统 · v1.0.0</span>
+    </div>
+  </aside>
+
+  <main class="login-main">
+    <div class="login-card">
+      <div class="lc-head">
+        <h1 class="lc-title">欢迎登录</h1>
+        <p class="lc-desc">请使用注册手机号登录系统</p>
+      </div>
+
+      <form class="lc-form" onsubmit="return false;">
+        <div class="form-field">
+          <label class="form-label">手机号</label>
+          <div class="phone-input">
+            <span class="phone-prefix">+86</span>
+            <input type="tel" class="input" placeholder="请输入 11 位手机号" value="138 8866 2024" inputmode="numeric">
+          </div>
+        </div>
+
+        <div class="form-field">
+          <label class="form-label">短信验证码</label>
+          <div class="code-input">
+            <input type="text" class="input" placeholder="请输入 6 位验证码" inputmode="numeric" value="••••••">
+            <button type="button" class="code-btn" id="codeBtn">获取验证码</button>
+          </div>
+          <span class="form-hint">验证码 5 分钟内有效，请勿泄露</span>
+        </div>
+
+        <div class="lc-row">
+          <label class="remember">
+            <input type="checkbox" class="checkbox" checked> 记住登录
+          </label>
+          <a class="btn-link" href="#" onclick="return false;">忘记账号？</a>
+        </div>
+
+        <label class="agree">
+          <input type="checkbox" class="checkbox" checked>
+          <span>我已阅读并同意 <a class="btn-link" href="#" onclick="return false;">《服务协议》</a> 与 <a class="btn-link" href="#" onclick="return false;">《隐私政策》</a></span>
+        </label>
+
+        <button type="submit" class="btn btn-primary lc-submit" data-dom-id="login-submit">
+          <i data-lucide="log-in"></i> 登 录
+        </button>
+      </form>
+
+      <div class="lc-foot">
+        <span class="lc-foot-text">还没有账号？</span>
+        <a class="btn-link" href="#" onclick="return false;">联系管理员开通</a>
+      </div>
+    </div>
+  </main>
+</div>
+
+<style>
+.login-body{margin:0;font-family:var(--fin-font-sans);background:var(--fin-background);color:var(--fin-foreground)}
+.login-wrap{display:flex;min-height:100vh}
+.login-aside{flex:0 0 46%;background:linear-gradient(160deg,var(--fin-primary-900) 0%,var(--fin-primary-800) 55%,var(--fin-primary-700) 100%);color:#fff;display:flex;flex-direction:column;justify-content:space-between;padding:40px 44px;position:relative;overflow:hidden}
+.login-aside::before{content:"";position:absolute;right:-120px;top:-120px;width:380px;height:380px;border-radius:50%;background:radial-gradient(circle,rgba(93,128,196,.35),transparent 70%)}
+.login-aside::after{content:"";position:absolute;left:-80px;bottom:-80px;width:260px;height:260px;border-radius:50%;background:radial-gradient(circle,rgba(31,58,122,.4),transparent 70%)}
+.la-top{display:flex;align-items:center;gap:12px;position:relative;z-index:1}
+.la-logo{width:42px;height:42px;border-radius:var(--fin-radius-md);background:rgba(255,255,255,.12);backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center;color:#fff;border:1px solid rgba(255,255,255,.18)}
+.la-brand{display:flex;flex-direction:column}
+.la-name{font-size:16px;font-weight:600;color:#fff;line-height:1.3}
+.la-sub{font-size:11px;color:rgba(255,255,255,.6);letter-spacing:.02em}
+.la-mid{position:relative;z-index:1}
+.la-headline{font-size:24px;font-weight:600;color:#fff;line-height:1.4;margin:0 0 24px;letter-spacing:.01em}
+.la-points{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:14px}
+.la-points li{display:flex;align-items:center;gap:10px;font-size:13.5px;color:rgba(255,255,255,.85)}
+.la-points li svg{width:18px;height:18px;color:var(--fin-primary-300);flex-shrink:0}
+.la-foot{display:flex;flex-direction:column;gap:10px;position:relative;z-index:1}
+.la-badge{display:inline-flex;align-items:center;gap:6px;font-size:12px;color:rgba(255,255,255,.7);padding:6px 10px;border:1px solid rgba(255,255,255,.15);border-radius:var(--fin-radius-md);width:fit-content;background:rgba(255,255,255,.04)}
+.la-badge svg{width:14px;height:14px}
+.la-copy{font-size:11.5px;color:rgba(255,255,255,.45)}
+
+.login-main{flex:1;display:flex;align-items:center;justify-content:center;padding:32px;background:var(--fin-background)}
+.login-card{width:100%;max-width:400px;background:var(--fin-card);border:1px solid var(--fin-border);border-radius:var(--fin-radius-lg);padding:36px 34px;box-shadow:var(--fin-shadow-md)}
+.lc-head{margin-bottom:24px}
+.lc-title{font-size:22px;font-weight:600;color:var(--fin-foreground);margin:0 0 6px}
+.lc-desc{font-size:13px;color:var(--fin-muted-foreground);margin:0}
+.lc-form{display:flex;flex-direction:column;gap:16px}
+.form-field{display:flex;flex-direction:column;min-width:0}
+.form-label{font-size:12.5px;font-weight:500;color:var(--fin-foreground);margin-bottom:6px}
+.form-hint{font-size:11.5px;color:var(--fin-muted-foreground);margin-top:5px}
+.input{height:38px;width:100%;padding:0 12px;border:1px solid var(--fin-input);border-radius:var(--fin-radius-md);background:var(--fin-card);color:var(--fin-foreground);font-size:13.5px;font-family:inherit;outline:none;transition:border-color .15s,box-shadow .15s}
+.input::placeholder{color:var(--fin-muted-foreground)}
+.input:focus{border-color:var(--fin-primary-500);box-shadow:0 0 0 3px rgba(58,93,172,.12)}
+.phone-input{display:flex;align-items:stretch}
+.phone-prefix{display:inline-flex;align-items:center;padding:0 12px;border:1px solid var(--fin-input);border-right:none;border-radius:var(--fin-radius-md) 0 0 var(--fin-radius-md);background:var(--fin-muted);color:var(--fin-foreground);font-size:13.5px;font-weight:500}
+.phone-input .input{border-radius:0 var(--fin-radius-md) var(--fin-radius-md) 0}
+.code-input{display:flex;gap:8px}
+.code-input .input{flex:1;letter-spacing:6px;text-align:center;font-weight:600}
+.code-btn{flex-shrink:0;height:38px;padding:0 14px;border:1px solid var(--fin-primary-300);background:var(--fin-primary-50);color:var(--fin-primary-700);border-radius:var(--fin-radius-md);font-size:12.5px;font-weight:500;cursor:pointer;white-space:nowrap;transition:all .15s}
+.code-btn:hover{background:var(--fin-primary-100)}
+.code-btn.is-disabled{opacity:.6;cursor:not-allowed}
+.lc-row{display:flex;align-items:center;justify-content:space-between}
+.remember{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--fin-foreground);cursor:pointer}
+.checkbox{width:15px;height:15px;accent-color:var(--fin-primary-700);cursor:pointer}
+.btn-link{background:none;border:none;color:var(--fin-primary-700);font-size:13px;font-weight:500;padding:0;cursor:pointer;text-decoration:none}
+.btn-link:hover{text-decoration:underline}
+.agree{display:flex;align-items:flex-start;gap:8px;font-size:12px;color:var(--fin-muted-foreground);line-height:1.5;cursor:pointer}
+.agree .checkbox{margin-top:2px}
+.agree .btn-link{font-size:12px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;height:42px;padding:0 16px;border:1px solid transparent;border-radius:var(--fin-radius-md);font-size:14px;font-weight:600;font-family:inherit;cursor:pointer;transition:all .15s}
+.btn svg{width:17px;height:17px}
+.btn-primary{background:var(--fin-primary-700);color:#fff;border-color:var(--fin-primary-700)}
+.btn-primary:hover{background:var(--fin-primary-800)}
+.lc-submit{margin-top:4px;letter-spacing:4px}
+.lc-foot{display:flex;align-items:center;justify-content:center;gap:6px;margin-top:22px;padding-top:18px;border-top:1px dashed var(--fin-border)}
+.lc-foot-text{font-size:12.5px;color:var(--fin-muted-foreground)}
+@media (max-width:900px){.login-aside{display:none}.login-main{padding:20px}}
+</style>
+<script>
+lucide.createIcons();
+(function(){var b=document.getElementById('codeBtn');if(!b)return;b.addEventListener('click',function(){if(b.classList.contains('is-disabled'))return;var n=60;b.classList.add('is-disabled');b.textContent=n+'s 后重发';var t=setInterval(function(){n--;if(n<=0){clearInterval(t);b.classList.remove('is-disabled');b.textContent='获取验证码'}else{b.textContent=n+'s 后重发'}},1000)})})();
+</script>
+</body>
+</html>

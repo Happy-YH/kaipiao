@@ -1,0 +1,118 @@
+<div class="stack-gap">
+  <!-- 导入说明 -->
+  <div class="alert alert-info">
+    <i data-lucide="info"></i>
+    <div class="alert-body">
+      <div class="alert-title">手工开票说明</div>
+      适用于无法通过系统自动归集的特殊开票场景。请先下载标准模板，按字段要求填写后导入；单次导入不超过 500 条，系统将逐条校验税号与金额。
+    </div>
+  </div>
+
+  <!-- 操作区 -->
+  <div class="card">
+    <div class="card-head"><h3 class="card-title"><span class="bar"></span>导入开票数据</h3></div>
+    <div class="card-body">
+      <div class="manual-grid">
+        <div class="upload-zone" id="uploadZone">
+          <i data-lucide="cloud-upload"></i>
+          <span class="uz-title">点击或拖拽文件到此处导入</span>
+          <span class="uz-hint">支持 .xlsx / .xls 格式，单次不超过 500 条，文件 ≤ 10MB</span>
+          <div class="uz-actions">
+            <button class="btn btn-primary btn-sm"><i data-lucide="folder-open"></i> 选择文件</button>
+            <button class="btn btn-secondary btn-sm" data-dom-id="link-manual-template"><i data-lucide="download"></i> 下载导入模板</button>
+          </div>
+          <span class="uz-file"><i data-lucide="file-spreadsheet" style="width:14px;height:14px"></i> 贷款利息开票模板_20260719.xlsx</span>
+        </div>
+        <div class="rules-box">
+          <div class="rules-head"><i data-lucide="list-checks"></i> 字段填写规范</div>
+          <ul class="rules-list">
+            <li><span class="r-key">发票抬头</span><span class="r-desc">客户完整企业名称，与营业执照一致</span></li>
+            <li><span class="r-key">税号</span><span class="r-desc">18 位统一社会信用代码，字母大写</span></li>
+            <li><span class="r-key">开票项目</span><span class="r-desc">贷款利息 / 手续费 / 担保费 / 违约金</span></li>
+            <li><span class="r-key">金额</span><span class="r-desc">含税金额，保留两位小数，&gt; 0</span></li>
+            <li><span class="r-key">合同号</span><span class="r-desc">必填，关联贷款合同编号</span></li>
+            <li><span class="r-key">客户名称</span><span class="r-desc">还款人/借款人名称</span></li>
+          </ul>
+          <div class="rules-warn"><i data-lucide="triangle-alert"></i> 税号校验失败或金额异常的记录将标记为失败，可修正后重新导入。</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 汇总 -->
+  <div class="summary-row">
+    <div class="sum-item"><span class="sum-label">本次导入</span><span class="sum-val">12 条</span></div>
+    <div class="sum-divider"></div>
+    <div class="sum-item"><span class="sum-label">校验成功</span><span class="sum-val sum-ok">9 条</span></div>
+    <div class="sum-divider"></div>
+    <div class="sum-item"><span class="sum-label">校验失败</span><span class="sum-val sum-err">3 条</span></div>
+    <div class="sum-divider"></div>
+    <div class="sum-item"><span class="sum-label">开票金额合计</span><span class="sum-val">¥ 386,500.00</span></div>
+    <div class="spacer"></div>
+    <button class="btn btn-primary btn-sm"><i data-lucide="send"></i> 提交开票（9 条）</button>
+    <button class="btn btn-secondary btn-sm"><i data-lucide="download"></i> 导出失败记录</button>
+  </div>
+
+  <!-- 导入结果 -->
+  <div class="card">
+    <div class="card-head">
+      <h3 class="card-title"><span class="bar"></span>导入结果<span class="card-sub">最近一次 · 2026-07-19 14:30</span></h3>
+      <div class="card-head-actions">
+        <div class="filter-tabs">
+          <button class="ftab is-active">全部 12</button>
+          <button class="ftab">成功 9</button>
+          <button class="ftab">失败 3</button>
+        </div>
+      </div>
+    </div>
+    <div class="table-wrap">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th class="row-check">序号</th><th>发票抬头</th><th>税号</th><th>开票项目</th><th class="col-amount">金额</th><th>客户名称</th><th>合同号</th><th>导入状态</th><th>失败原因</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td class="row-check col-muted">1</td><td class="cell-main">恒泰贸易有限公司</td><td class="col-num">91110000MA01AB2X5K</td><td>贷款利息</td><td class="col-amount">¥ 86,500.00</td><td class="col-muted">恒泰贸易</td><td class="col-muted">HT2026-0712</td><td><span class="tag tag-success">成功</span></td><td class="col-muted">—</td></tr>
+          <tr><td class="row-check col-muted">2</td><td class="cell-main">瑞丰科技有限公司</td><td class="col-num">91310000MA1FL3G67N</td><td>贷款利息</td><td class="col-amount">¥ 132,000.00</td><td class="col-muted">瑞丰科技</td><td class="col-muted">RF2026-0688</td><td><span class="tag tag-success">成功</span></td><td class="col-muted">—</td></tr>
+          <tr><td class="row-check col-muted">3</td><td class="cell-main">宏远建设集团</td><td class="col-num">9144030070908X12</td><td>手续费</td><td class="col-amount">¥ 3,200.00</td><td class="col-muted">宏远建设</td><td class="col-muted">HY2026-0701</td><td><span class="tag tag-error">失败</span></td><td class="fail-reason">税号位数不足，应为 18 位</td></tr>
+          <tr><td class="row-check col-muted">4</td><td class="cell-main">金海农业发展</td><td class="col-num">91510100MA62Y8B91F</td><td>贷款利息</td><td class="col-amount">¥ 45,800.00</td><td class="col-muted">金海农业</td><td class="col-muted">JH2026-0695</td><td><span class="tag tag-success">成功</span></td><td class="col-muted">—</td></tr>
+          <tr><td class="row-check col-muted">5</td><td class="cell-main">正大商贸</td><td class="col-num">91330106MA2H9X335Q</td><td>贷款利息</td><td class="col-amount">¥ 0.00</td><td class="col-muted">正大商贸</td><td class="col-muted">ZD2026-0679</td><td><span class="tag tag-error">失败</span></td><td class="fail-reason">金额必须大于 0</td></tr>
+          <tr><td class="row-check col-muted">6</td><td class="cell-main">中信物流股份</td><td class="col-num">91440101683267X09</td><td>贷款利息</td><td class="col-amount">¥ 96,200.00</td><td class="col-muted">中信物流</td><td class="col-muted">ZX2026-0666</td><td><span class="tag tag-success">成功</span></td><td class="col-muted">—</td></tr>
+          <tr><td class="row-check col-muted">7</td><td class="cell-main">汇通投资</td><td class="col-num">91350200M00012Y44X</td><td>担保费</td><td class="col-amount">¥ 15,000.00</td><td class="col-muted">汇通投资</td><td class="col-muted">HT2026-0655</td><td><span class="tag tag-error">失败</span></td><td class="fail-reason">合同号不存在于系统</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="pagination">
+      <span class="page-info">显示第 1-7 条 / 共 12 条</span>
+      <div class="page-controls">
+        <button class="page-btn is-disabled"><i data-lucide="chevron-left" style="width:14px;height:14px"></i></button>
+        <button class="page-btn is-active">1</button><button class="page-btn">2</button>
+        <button class="page-btn"><i data-lucide="chevron-right" style="width:14px;height:14px"></i></button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+.manual-grid{display:grid;grid-template-columns:1fr 320px;gap:18px;align-items:start}
+.upload-zone{padding:32px 20px}
+.uz-actions{display:flex;gap:8px;margin-top:4px}
+.uz-file{display:inline-flex;align-items:center;gap:6px;margin-top:10px;font-size:12.5px;color:var(--fin-primary-700);background:var(--fin-primary-50);padding:5px 10px;border-radius:var(--fin-radius-md);border:1px solid var(--fin-primary-100)}
+.rules-box{background:var(--fin-muted);border:1px solid var(--fin-border);border-radius:var(--fin-radius-lg);padding:16px}
+.rules-head{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:600;color:var(--fin-foreground);margin-bottom:12px}
+.rules-head svg{width:16px;height:16px;color:var(--fin-primary-700)}
+.rules-list{list-style:none;margin:0 0 12px;padding:0;display:flex;flex-direction:column;gap:8px}
+.rules-list li{display:flex;align-items:baseline;gap:8px;font-size:12px;line-height:1.5}
+.r-key{flex-shrink:0;width:64px;font-weight:600;color:var(--fin-foreground)}
+.r-desc{color:var(--fin-muted-foreground);min-width:0}
+.rules-warn{display:flex;align-items:flex-start;gap:6px;font-size:11.5px;color:var(--fin-state-warning);background:var(--fin-state-warning-bg);padding:8px 10px;border-radius:var(--fin-radius-md);line-height:1.5}
+.rules-warn svg{width:14px;height:14px;flex-shrink:0;margin-top:1px}
+.summary-row{display:flex;align-items:center;gap:0;padding:14px 22px}
+.summary-row .spacer{flex:1;min-width:0}
+.filter-tabs{display:flex;gap:4px;background:var(--fin-muted);padding:3px;border-radius:var(--fin-radius-md)}
+.ftab{height:28px;padding:0 12px;border:none;background:transparent;color:var(--fin-muted-foreground);font-size:12.5px;font-weight:500;border-radius:var(--fin-radius-sm);cursor:pointer;transition:all .15s}
+.ftab.is-active{background:var(--fin-card);color:var(--fin-primary-700);box-shadow:var(--fin-shadow-sm)}
+.fail-reason{color:var(--fin-state-error);font-size:12px}
+@media (max-width:1100px){.manual-grid{grid-template-columns:1fr}.summary-row{flex-wrap:wrap;gap:12px}.summary-row .spacer{display:none}}
+</style>

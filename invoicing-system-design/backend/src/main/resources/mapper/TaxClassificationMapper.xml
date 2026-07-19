@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.invoice.mapper.TaxClassificationMapper">
+    <select id="selectAll" resultType="TaxClassification">
+        SELECT * FROM tax_classification WHERE status = 1 ORDER BY fee_type
+    </select>
+    <select id="selectById" parameterType="long" resultType="TaxClassification">
+        SELECT * FROM tax_classification WHERE id = #{id} AND status = 1
+    </select>
+    <select id="selectByTaxCode" parameterType="string" resultType="TaxClassification">
+        SELECT * FROM tax_classification WHERE tax_code = #{taxCode} AND status = 1
+    </select>
+    <select id="selectByFeeType" parameterType="string" resultType="TaxClassification">
+        SELECT * FROM tax_classification WHERE fee_type = #{feeType} AND status = 1 LIMIT 1
+    </select>
+    <insert id="insert" parameterType="TaxClassification" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO tax_classification (tax_code, tax_name, fee_type, tax_rate, status)
+        VALUES (#{taxCode}, #{taxName}, #{feeType}, #{taxRate}, #{status})
+    </insert>
+    <update id="update" parameterType="TaxClassification">
+        UPDATE tax_classification SET
+            tax_code = #{taxCode},
+            tax_name = #{taxName},
+            fee_type = #{feeType},
+            tax_rate = #{taxRate},
+            status = #{status}
+        WHERE id = #{id}
+    </update>
+</mapper>

@@ -1,0 +1,213 @@
+/* ============================================================
+   金融贷款利息开票系统 — 品牌设计令牌
+   Brand: fin  |  Mode: light/dark  |  Style: 严谨商务 / 简化
+   主色: 深靛蓝(机构信任)  |  中性: 冷灰  |  圆角: 克制(4/6/8px)
+   ============================================================ */
+
+:root {
+  /* ---- 主色: 深靛蓝 机构级信任色阶 ---- */
+  --fin-primary-50:  #eef3fb;
+  --fin-primary-100: #dbe5f5;
+  --fin-primary-200: #b8c9e9;
+  --fin-primary-300: #8da6d8;
+  --fin-primary-400: #5d7fc4;
+  --fin-primary-500: #3a5dac;
+  --fin-primary-600: #2a4793;  /* 主交互色 */
+  --fin-primary-700: #1f3a7a;
+  --fin-primary-800: #1a2f63;
+  --fin-primary-900: #15233d;
+  --fin-primary-950: #0d1626;
+
+  /* ---- 语义别名(被 fill-html-head 识别) ---- */
+  --fin-background: #f4f6fa;            /* 应用画布 冷灰底 */
+  --fin-foreground: #1a2233;            /* 主文本 近黑石板 */
+  --fin-card: #ffffff;                  /* 卡片/面板 白 */
+  --fin-card-foreground: #1a2233;
+  --fin-popover: #ffffff;
+  --fin-popover-foreground: #1a2233;
+  --fin-primary: var(--fin-primary-700);/* 严谨深靛蓝 默认主色 */
+  --fin-primary-foreground: #ffffff;
+  --fin-secondary: #eef1f7;
+  --fin-secondary-foreground: #2a3450;
+  --fin-muted: #f1f4f9;                 /* 表格条纹/弱底 */
+  --fin-muted-foreground: #5b6677;      /* 次级文本 */
+  --fin-accent: var(--fin-primary-50);
+  --fin-accent-foreground: var(--fin-primary-800);
+  --fin-destructive: #b91c1c;
+  --fin-destructive-foreground: #ffffff;
+  --fin-border: #e3e8f0;                /* 细分隔线 */
+  --fin-input: #cdd5e1;                 /* 输入框描边 */
+  --fin-ring: var(--fin-primary-600);
+
+  /* ---- 状态色(业务标签) ---- */
+  --fin-state-success: #15803d;
+  --fin-state-success-foreground: #ffffff;
+  --fin-state-success-bg: #e6f3ea;
+  --fin-state-warning: #b45309;
+  --fin-state-warning-foreground: #ffffff;
+  --fin-state-warning-bg: #fbf0dd;
+  --fin-state-error: #b91c1c;
+  --fin-state-error-foreground: #ffffff;
+  --fin-state-error-bg: #fbe7e7;
+  --fin-state-info: var(--fin-primary-700);
+  --fin-state-info-bg: var(--fin-primary-50);
+  --fin-state-neutral: #475569;
+  --fin-state-neutral-bg: #eef1f6;
+
+  /* ---- 侧边栏(深色品牌栏 提升层级) ---- */
+  --fin-sidebar: #15233d;
+  --fin-sidebar-foreground: #c8d3e6;
+  --fin-sidebar-primary: #ffffff;
+  --fin-sidebar-primary-foreground: var(--fin-primary-700);
+  --fin-sidebar-accent: #1f3358;
+  --fin-sidebar-accent-foreground: #ffffff;
+
+  /* ---- 图表色阶(克制商务 + 科技高光) ---- */
+  --fin-chart-1: var(--fin-primary-600);
+  --fin-chart-2: #0891b2;
+  --fin-chart-3: #c08a3e;
+  --fin-chart-4: #6b7c93;
+  --fin-chart-5: #9e7bb0;
+
+  /* ---- 科技高光层(青蓝 cyan) ---- */
+  --fin-tech-300: #67e8f9;
+  --fin-tech-400: #22d3ee;
+  --fin-tech-500: #06b6d4;
+  --fin-tech-600: #0891b2;
+  --fin-tech-700: #0e7490;
+  --fin-tech: var(--fin-tech-500);
+  --fin-tech-foreground: #04141a;
+  --fin-tech-glow: rgba(6, 182, 212, 0.35);
+  --fin-tech-glow-soft: rgba(6, 182, 212, 0.18);
+
+  /* ---- 渐变(品牌/科技) ---- */
+  --fin-gradient-brand: linear-gradient(135deg, var(--fin-primary-600) 0%, var(--fin-primary-800) 100%);
+  --fin-gradient-tech: linear-gradient(135deg, var(--fin-primary-700) 0%, var(--fin-tech-600) 100%);
+  --fin-gradient-tech-bright: linear-gradient(135deg, var(--fin-primary-600) 0%, var(--fin-tech-500) 100%);
+  --fin-gradient-cyan: linear-gradient(135deg, var(--fin-tech-400) 0%, var(--fin-tech-600) 100%);
+
+  /* ---- 圆角(克制) ---- */
+  --fin-radius-sm: 4px;
+  --fin-radius-md: 6px;
+  --fin-radius-lg: 8px;
+  --fin-radius-xl: 10px;
+
+  /* ---- 阴影(扁平低饱和 + 科技辉光) ---- */
+  --fin-shadow-sm: 0 1px 2px rgba(15, 31, 66, 0.06);
+  --fin-shadow-md: 0 2px 8px rgba(15, 31, 66, 0.08);
+  --fin-shadow-lg: 0 6px 20px rgba(15, 31, 66, 0.12);
+  --fin-shadow-glow-sm: 0 0 0 1px var(--fin-tech-glow-soft), 0 2px 10px rgba(6, 182, 212, 0.15);
+  --fin-shadow-glow: 0 0 0 1px var(--fin-tech-glow), 0 4px 18px rgba(6, 182, 212, 0.22);
+  --fin-shadow-glow-primary: 0 4px 14px rgba(31, 58, 122, 0.28);
+
+  /* ---- 网格底纹(科技感) ---- */
+  --fin-grid-dot: radial-gradient(circle, rgba(31, 58, 122, 0.05) 1px, transparent 1px);
+  --fin-grid-size: 22px;
+
+  /* ---- 间距基准 ---- */
+  --fin-space-1: 4px;
+  --fin-space-2: 8px;
+  --fin-space-3: 12px;
+  --fin-space-4: 16px;
+  --fin-space-5: 24px;
+  --fin-space-6: 32px;
+
+  /* ---- 排版 ---- */
+  --fin-font-sans: "PingFang SC", "Microsoft YaHei", "Helvetica Neue", "Segoe UI", system-ui, -apple-system, "Hiragino Sans GB", sans-serif;
+  --fin-font-mono: "JetBrains Mono", "SF Mono", "Cascadia Code", Consolas, monospace;
+  --fin-font-size-xs: 12px;
+  --fin-font-size-sm: 13px;
+  --fin-font-size-base: 14px;   /* 中后台基准 */
+  --fin-font-size-md: 15px;
+  --fin-font-size-lg: 16px;
+  --fin-font-size-xl: 18px;
+  --fin-font-size-2xl: 22px;
+  --fin-line-tight: 1.35;
+  --fin-line-base: 1.55;
+  --fin-weight-regular: 400;
+  --fin-weight-medium: 500;
+  --fin-weight-semibold: 600;
+  --fin-weight-bold: 700;
+}
+
+/* ---- 暗色模式 ---- */
+.dark {
+  --fin-background: #0e1626;
+  --fin-foreground: #e4e9f2;
+  --fin-card: #161f33;
+  --fin-card-foreground: #e4e9f2;
+  --fin-popover: #1a2438;
+  --fin-popover-foreground: #e4e9f2;
+  --fin-primary: #5d80c4;
+  --fin-primary-foreground: #0e1626;
+  --fin-secondary: #1f2a42;
+  --fin-secondary-foreground: #c8d3e6;
+  --fin-muted: #1a2336;
+  --fin-muted-foreground: #94a2b8;
+  --fin-accent: #1f2a42;
+  --fin-accent-foreground: #c8d3e6;
+  --fin-destructive: #f87171;
+  --fin-destructive-foreground: #1a2233;
+  --fin-border: #243049;
+  --fin-input: #2e3c5a;
+  --fin-ring: #5d80c4;
+
+  --fin-state-success: #34d399;
+  --fin-state-success-bg: #11261c;
+  --fin-state-warning: #fbbf24;
+  --fin-state-warning-bg: #2a1f0a;
+  --fin-state-error: #f87171;
+  --fin-state-error-bg: #2a1414;
+  --fin-state-info-bg: #16233f;
+  --fin-state-neutral-bg: #1f2a42;
+
+  --fin-sidebar: #0b1322;
+  --fin-sidebar-foreground: #94a2b8;
+  --fin-sidebar-accent: #1a2438;
+
+  --fin-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+  --fin-shadow-md: 0 2px 8px rgba(0, 0, 0, 0.4);
+  --fin-shadow-lg: 0 6px 20px rgba(0, 0, 0, 0.5);
+
+  --fin-tech-300: #67e8f9;
+  --fin-tech-400: #22d3ee;
+  --fin-tech-500: #06b6d4;
+  --fin-tech-600: #0891b2;
+  --fin-tech-glow: rgba(34, 211, 238, 0.4);
+  --fin-tech-glow-soft: rgba(34, 211, 238, 0.2);
+  --fin-grid-dot: radial-gradient(circle, rgba(103, 232, 249, 0.06) 1px, transparent 1px);
+}
+
+/* ============================================================
+   排版类(.fin-*)
+   ============================================================ */
+.fin-h1 { font-family: var(--fin-font-sans); font-size: var(--fin-font-size-2xl); font-weight: var(--fin-weight-semibold); line-height: var(--fin-line-tight); color: var(--fin-foreground); letter-spacing: -0.01em; }
+.fin-h2 { font-family: var(--fin-font-sans); font-size: var(--fin-font-size-xl); font-weight: var(--fin-weight-semibold); line-height: var(--fin-line-tight); color: var(--fin-foreground); }
+.fin-h3 { font-family: var(--fin-font-sans); font-size: var(--fin-font-size-lg); font-weight: var(--fin-weight-semibold); line-height: var(--fin-line-tight); color: var(--fin-foreground); }
+.fin-h4 { font-family: var(--fin-font-sans); font-size: var(--fin-font-size-md); font-weight: var(--fin-weight-semibold); line-height: var(--fin-line-tight); color: var(--fin-foreground); }
+.fin-body { font-family: var(--fin-font-sans); font-size: var(--fin-font-size-base); font-weight: var(--fin-weight-regular); line-height: var(--fin-line-base); color: var(--fin-foreground); }
+.fin-body-sm { font-family: var(--fin-font-sans); font-size: var(--fin-font-size-sm); font-weight: var(--fin-weight-regular); line-height: var(--fin-line-base); color: var(--fin-foreground); }
+.fin-caption { font-family: var(--fin-font-sans); font-size: var(--fin-font-size-xs); font-weight: var(--fin-weight-regular); line-height: var(--fin-line-base); color: var(--fin-muted-foreground); }
+.fin-label { font-family: var(--fin-font-sans); font-size: var(--fin-font-size-sm); font-weight: var(--fin-weight-medium); line-height: var(--fin-line-tight); color: var(--fin-foreground); }
+.fin-mono { font-family: var(--fin-font-mono); font-size: var(--fin-font-size-sm); font-weight: var(--fin-weight-medium); }
+
+/* ---- 基础元素 ---- */
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  font-family: var(--fin-font-sans);
+  font-size: var(--fin-font-size-base);
+  line-height: var(--fin-line-base);
+  color: var(--fin-foreground);
+  background-color: var(--fin-background);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+* { box-sizing: border-box; }
+::selection { background: var(--fin-tech-300); color: var(--fin-primary-950); }
+
+/* 滚动条(科技感) */
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: linear-gradient(180deg, var(--fin-primary-300), var(--fin-tech-600)); border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: linear-gradient(180deg, var(--fin-tech-400), var(--fin-primary-600)); }

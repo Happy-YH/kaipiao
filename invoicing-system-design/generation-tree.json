@@ -1,0 +1,61 @@
+{
+  "root": {
+    "id": "gen-shared",
+    "kind": "project-shell",
+    "title": "共享外壳与品牌基础",
+    "output": [
+      "partials/head.html",
+      "partials/shell-open.html",
+      "partials/shell-close.html",
+      "colors_and_type.css"
+    ],
+    "status": "generated",
+    "children": [
+      {
+        "id": "gen-page-login",
+        "kind": "page-leaf",
+        "title": "登录",
+        "output": "pages/login.html",
+        "inheritedFragments": ["partials/head.html"],
+        "privateRegions": ["登录表单主体"],
+        "status": "generated"
+      },
+      {
+        "id": "gen-page-home",
+        "kind": "page-leaf",
+        "title": "工作台",
+        "output": "pages/home.html",
+        "inheritedFragments": ["partials/head.html", "partials/shell-open.html", "partials/shell-close.html"],
+        "privateRegions": ["KPI卡片", "开票趋势图", "最近开票记录"],
+        "status": "generated"
+      },
+      {
+        "id": "gen-page-invoice-apply",
+        "kind": "page-leaf",
+        "title": "开票申请",
+        "output": "pages/invoice-apply.html",
+        "inheritedFragments": ["partials/head.html", "partials/shell-open.html", "partials/shell-close.html"],
+        "privateRegions": ["步骤条", "查询条件", "可开票还款记录表", "底部确认条"],
+        "status": "generated"
+      },
+      {
+        "id": "gen-page-invoice-records",
+        "kind": "page-leaf",
+        "title": "开票记录",
+        "output": "pages/invoice-records.html",
+        "inheritedFragments": ["partials/head.html", "partials/shell-open.html", "partials/shell-close.html"],
+        "privateRegions": ["查询条件", "汇总条", "发票记录表"],
+        "status": "generated"
+      },
+      {
+        "id": "gen-page-manual-invoice",
+        "kind": "page-leaf",
+        "title": "手工开票",
+        "output": "pages/manual-invoice.html",
+        "inheritedFragments": ["partials/head.html", "partials/shell-open.html", "partials/shell-close.html"],
+        "privateRegions": ["导入说明", "上传区", "字段规范", "导入结果表"],
+        "status": "generated"
+      }
+    ]
+  }
+}

@@ -1,0 +1,41 @@
+server:
+  port: 8080
+
+spring:
+  datasource:
+    url: jdbc:h2:file:./data/invoice_system;MODE=MySQL;DB_CLOSE_DELAY=-1;AUTO_SERVER=TRUE
+    username: sa
+    password:
+    driver-class-name: org.h2.Driver
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+      settings:
+        web-allow-others: true
+  sql:
+    init:
+      mode: always
+      schema-locations: classpath:schema.sql
+      data-locations: classpath:data.sql
+
+mybatis:
+  config-location: classpath:mybatis-config.xml
+  mapper-locations: classpath/mapper/*.xml
+  type-aliases-package: com.example.invoice.entity
+
+kingdee:
+  mock:
+    enabled: true
+  base-url: https://api.kingdee.com
+  app-id: your-app-id
+  app-secret: your-app-secret
+  tenant-id: your-tenant-id
+  seller-name: 示例公司名称
+  seller-tax-no: 91440000MA00000000
+
+logging:
+  level:
+    com.example.invoice.mapper: DEBUG
+    com.example.invoice: INFO
+    com.example.invoice.kingdee: DEBUG

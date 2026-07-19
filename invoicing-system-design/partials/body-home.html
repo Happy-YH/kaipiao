@@ -1,0 +1,136 @@
+<div class="stack-gap">
+  <!-- 欢迎条 -->
+  <div class="welcome-bar card">
+    <div class="wb-left">
+      <div class="wb-greet">
+        <h2 class="wb-hello">下午好，张明华</h2>
+        <p class="wb-date">2026 年 7 月 19 日 · 周日 · 财务运营部</p>
+      </div>
+      <div class="wb-tags">
+        <span class="tag tag-plain"><i data-lucide="bell" style="width:13px;height:13px"></i> 待开票提醒 12 条</span>
+        <span class="tag tag-plain"><i data-lucide="alarm-clock" style="width:13px;height:13px"></i> 3 笔即将超期</span>
+      </div>
+    </div>
+    <div class="wb-actions">
+      <button class="btn btn-secondary btn-sm"><i data-lucide="download"></i> 导出月报</button>
+      <button class="btn btn-primary btn-sm" data-dom-id="cta-apply"><i data-lucide="file-plus-2"></i> 立即开票</button>
+    </div>
+  </div>
+
+  <!-- KPI 卡片 -->
+  <div class="kpi-grid">
+    <div class="kpi-card">
+      <div class="kpi-head"><span class="kpi-label">待开票金额</span><span class="kpi-icon"><i data-lucide="clock-3"></i></span></div>
+      <div class="kpi-value">1,286,500<span class="unit">元</span></div>
+      <div class="kpi-foot"><span class="kpi-delta up"><i data-lucide="trending-up"></i> 8.2%</span><span class="kpi-note">较上周</span></div>
+    </div>
+    <div class="kpi-card k-success">
+      <div class="kpi-head"><span class="kpi-label">本月已开票金额</span><span class="kpi-icon"><i data-lucide="circle-dollar-sign"></i></span></div>
+      <div class="kpi-value">3,452,180<span class="unit">元</span></div>
+      <div class="kpi-foot"><span class="kpi-delta up"><i data-lucide="trending-up"></i> 12.6%</span><span class="kpi-note">同比上月</span></div>
+    </div>
+    <div class="kpi-card k-info">
+      <div class="kpi-head"><span class="kpi-label">本月开票笔数</span><span class="kpi-icon"><i data-lucide="file-text"></i></span></div>
+      <div class="kpi-value">486<span class="unit">笔</span></div>
+      <div class="kpi-foot"><span class="kpi-delta up"><i data-lucide="trending-up"></i> 5.4%</span><span class="kpi-note">同比上月</span></div>
+    </div>
+    <div class="kpi-card k-warning">
+      <div class="kpi-head"><span class="kpi-label">本月红冲发票</span><span class="kpi-icon"><i data-lucide="rotate-ccw"></i></span></div>
+      <div class="kpi-value">7<span class="unit">张</span></div>
+      <div class="kpi-foot"><span class="kpi-delta down"><i data-lucide="trending-down"></i> 2 张</span><span class="kpi-note">较上月</span></div>
+    </div>
+  </div>
+
+  <!-- 图表 + 类型分布 -->
+  <div class="home-grid">
+    <div class="card home-chart-card">
+      <div class="card-head">
+        <h3 class="card-title"><span class="bar"></span>开票趋势<span class="card-sub">近 12 个月</span></h3>
+        <div class="chart-legend">
+          <span class="legend-item"><i class="lg-bar"></i>开票金额(万元)</span>
+          <span class="legend-item"><i class="lg-line"></i>开票笔数</span>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="chart-box"><canvas id="trendChart"></canvas></div>
+      </div>
+    </div>
+    <div class="card home-side-card">
+      <div class="card-head"><h3 class="card-title"><span class="bar"></span>开票类型分布</h3><span class="card-sub">本月</span></div>
+      <div class="card-body">
+        <div class="type-list">
+          <div class="type-row"><span class="type-label">贷款利息</span><div class="type-track"><div class="type-fill" style="width:68%;background:var(--fin-chart-1)"></div></div><span class="type-val">68%</span></div>
+          <div class="type-row"><span class="type-label">手续费</span><div class="type-track"><div class="type-fill" style="width:18%;background:var(--fin-chart-2)"></div></div><span class="type-val">18%</span></div>
+          <div class="type-row"><span class="type-label">担保费</span><div class="type-track"><div class="type-fill" style="width:9%;background:var(--fin-chart-3)"></div></div><span class="type-val">9%</span></div>
+          <div class="type-row"><span class="type-label">违约金</span><div class="type-track"><div class="type-fill" style="width:5%;background:var(--fin-chart-4)"></div></div><span class="type-val">5%</span></div>
+        </div>
+        <div class="todo-box">
+          <div class="todo-head"><span>待办事项</span><span class="todo-count">12</span></div>
+          <div class="todo-item"><i data-lucide="circle-alert"></i><span>客户「恒泰贸易」3 笔还款待开票</span><span class="todo-tag">紧急</span></div>
+          <div class="todo-item"><i data-lucide="clock"></i><span>7 月度发票汇总待审核</span></div>
+          <div class="todo-item"><i data-lucide="file-check-2"></i><span>2 张红冲申请待审批</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 最近开票记录 -->
+  <div class="card">
+    <div class="card-head">
+      <h3 class="card-title"><span class="bar"></span>最近开票记录</h3>
+      <div class="card-head-actions">
+        <a class="btn-link" href="#" onclick="return false;" data-dom-id="link-records-home">查看全部 <i data-lucide="chevron-right" style="width:13px;height:13px"></i></a>
+      </div>
+    </div>
+    <div class="table-wrap">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>发票号</th><th>客户名称</th><th>合同号</th><th>开票项目</th><th class="col-amount">开票金额</th><th>状态</th><th>开票日期</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td class="col-num">24420<span style="color:var(--fin-muted-foreground)">000000123</span></td><td class="cell-main">恒泰贸易有限公司</td><td class="col-muted">HT2026-0712</td><td>贷款利息</td><td class="col-amount">¥ 86,500.00</td><td><span class="tag tag-success">已开票</span></td><td class="col-muted">07-19 14:22</td></tr>
+          <tr><td class="col-num">24420<span style="color:var(--fin-muted-foreground)">000000122</span></td><td class="cell-main">瑞丰科技有限公司</td><td class="col-muted">RF2026-0688</td><td>贷款利息</td><td class="col-amount">¥ 132,000.00</td><td><span class="tag tag-success">已开票</span></td><td class="col-muted">07-19 11:05</td></tr>
+          <tr><td class="col-num">24420<span style="color:var(--fin-muted-foreground)">000000121</span></td><td class="cell-main">宏远建设集团</td><td class="col-muted">HY2026-0701</td><td>手续费</td><td class="col-amount">¥ 3,200.00</td><td><span class="tag tag-warning">开票中</span></td><td class="col-muted">07-19 09:48</td></tr>
+          <tr><td class="col-num">24420<span style="color:var(--fin-muted-foreground)">000000120</span></td><td class="cell-main">金海农业发展</td><td class="col-muted">JH2026-0695</td><td>贷款利息</td><td class="col-amount">¥ 45,800.00</td><td><span class="tag tag-success">已开票</span></td><td class="col-muted">07-18 17:30</td></tr>
+          <tr><td class="col-num">24420<span style="color:var(--fin-muted-foreground)">000000119</span></td><td class="cell-main">正大商贸</td><td class="col-muted">ZD2026-0679</td><td>贷款利息</td><td class="col-amount">¥ 28,600.00</td><td><span class="tag tag-error">已红冲</span></td><td class="col-muted">07-18 15:12</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<style>
+.welcome-bar{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:18px 22px;position:relative;overflow:hidden}
+.welcome-bar::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--fin-gradient-cyan);box-shadow:0 0 8px var(--fin-tech-glow-soft)}
+.wb-left{display:flex;align-items:center;gap:20px;min-width:0}
+.wb-hello{font-size:18px;font-weight:600;color:var(--fin-foreground);margin:0 0 4px;letter-spacing:.01em}
+.wb-date{font-size:12.5px;color:var(--fin-muted-foreground);margin:0}
+.wb-tags{display:flex;gap:8px;flex-wrap:wrap}
+.wb-tags .tag{height:24px}
+.wb-actions{display:flex;gap:8px;flex-shrink:0}
+.home-grid{display:grid;grid-template-columns:1.7fr 1fr;gap:14px;align-items:start}
+.home-chart-card .chart-box{height:300px;position:relative}
+.chart-legend{display:flex;gap:14px}
+.legend-item{display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--fin-muted-foreground)}
+.legend-item .lg-bar{width:12px;height:8px;border-radius:2px;background:var(--fin-chart-1);display:inline-block}
+.legend-item .lg-line{width:14px;height:2px;background:var(--fin-tech-500);display:inline-block;border-radius:2px;box-shadow:0 0 4px var(--fin-tech-glow-soft)}
+.type-list{display:flex;flex-direction:column;gap:12px;margin-bottom:18px}
+.type-row{display:flex;align-items:center;gap:10px}
+.type-label{font-size:12.5px;color:var(--fin-foreground);font-weight:500;width:64px;flex-shrink:0}
+.type-track{flex:1;height:8px;background:var(--fin-muted);border-radius:4px;overflow:hidden;min-width:0;border:1px solid var(--fin-border)}
+.type-fill{height:100%;border-radius:4px;position:relative;overflow:hidden}
+.type-fill::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(255,255,255,.25),transparent 60%)}
+.type-val{font-size:12px;color:var(--fin-muted-foreground);font-family:var(--fin-font-mono);width:36px;text-align:right;flex-shrink:0}
+.todo-box{border-top:1px dashed var(--fin-border);padding-top:14px}
+.todo-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;font-size:12.5px;font-weight:600;color:var(--fin-foreground)}
+.todo-count{font-size:11px;color:var(--fin-state-warning);background:var(--fin-state-warning-bg);padding:1px 7px;border-radius:10px;font-weight:600;font-family:var(--fin-font-mono)}
+.todo-item{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--fin-foreground);padding:7px 0;border-bottom:1px solid var(--fin-border)}
+.todo-item:last-child{border-bottom:none}
+.todo-item svg{width:14px;height:14px;color:var(--fin-muted-foreground);flex-shrink:0;transition:color .15s}
+.todo-item:hover svg{color:var(--fin-tech-500)}
+.todo-item .todo-tag{margin-left:auto;font-size:10.5px;color:var(--fin-state-error);background:var(--fin-state-error-bg);padding:1px 6px;border-radius:3px;font-weight:600;flex-shrink:0}
+.card-head-actions{display:flex;gap:8px;align-items:center}
+@media (max-width:1100px){.home-grid{grid-template-columns:1fr}}
+</style>

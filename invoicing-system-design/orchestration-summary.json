@@ -1,0 +1,62 @@
+{
+  "project": {
+    "projectName": "金融贷款利息开票系统",
+    "projectPath": "d:\\Trae Work\\kaipiao\\invoicing-system-design",
+    "designFile": "invoicing-system-design.design",
+    "deviceType": "desktop",
+    "viewportMode": "app-shell",
+    "brandPrefix": "fin",
+    "generationTree": "generation-tree.json"
+  },
+  "designSource": {
+    "operatingMode": "free-explore",
+    "libraryIdentity": null
+  },
+  "designRead": "Enterprise finance admin console for loan-interest e-invoicing; audience = finance & business operations staff; tone = rigorous institutional trust, simplified, clear label hierarchy; avoid generic blue-purple gradient hero and decorative imagery.",
+  "designDials": {
+    "layoutVariance": 1,
+    "motionIntensity": 1,
+    "visualDensity": 4,
+    "reason": "Finance/compliance + dashboard medium-high density; rigorous business requires restrained, data-dense layout."
+  },
+  "styleContinuityAnchors": {
+    "styleDefinitionBrief": "金融开票中后台：深靛蓝(#1f3a7a)机构级主色 + 冷灰中性底 + 深色侧边栏；克制圆角(4/6/8px)；中后台14px基准字号；数据密度高，标签层级清晰；无装饰性图像，仅数据/图表/Lucide图标。",
+    "colorPalette": {
+      "primary": "#1f3a7a (深靛蓝, 机构信任)",
+      "background": "#f4f6fa (冷灰画布)",
+      "card": "#ffffff",
+      "sidebar": "#15233d (深色品牌栏)",
+      "border": "#e3e8f0",
+      "states": "success #15803d / warning #b45309 / error #b91c1c"
+    },
+    "typography": "PingFang SC / Microsoft YaHei 栈；h1 22px / h2 18px / h3 16px / body 14px / caption 12px；权重 400/500/600/700",
+    "radius": "sm 4px / md 6px / lg 8px (克制商务)",
+    "iconography": "Lucide 线性图标，1.5px 描边，17px 导航 / 15px 按钮内",
+    "componentStyle": "卡片白底+细边框+轻阴影；表格条纹表头+悬停高亮；状态标签带圆点前缀；按钮高度32px主按钮深靛蓝实心"
+  },
+  "sharedProjectShellContract": {
+    "shellFragments": ["partials/head.html", "partials/shell-open.html", "partials/shell-close.html"],
+    "shellElements": ["深色侧边栏(品牌+4项导航+合规足部)", "顶栏(页面标题+全局搜索+待办+用户)", "主内容区(独立滚动)"],
+    "navItems": [
+      { "key": "home", "label": "工作台", "domId": "nav-home" },
+      { "key": "apply", "label": "开票申请", "domId": "nav-apply" },
+      { "key": "records", "label": "开票记录", "domId": "nav-records" },
+      { "key": "manual", "label": "手工开票", "domId": "nav-manual" }
+    ],
+    "activeNavMechanism": "shell-root[data-nav-active] + .nav-item[data-nav-key] CSS 高亮"
+  },
+  "pages": [
+    { "pageId": "page-login", "title": "登录", "htmlSrc": "pages/login.html", "navActive": null, "chartsRequired": false, "images": 0 },
+    { "pageId": "page-home", "title": "工作台", "htmlSrc": "pages/home.html", "navActive": "home", "chartsRequired": true, "images": 0 },
+    { "pageId": "page-invoice-apply", "title": "开票申请", "htmlSrc": "pages/invoice-apply.html", "navActive": "apply", "chartsRequired": false, "images": 0 },
+    { "pageId": "page-invoice-records", "title": "开票记录", "htmlSrc": "pages/invoice-records.html", "navActive": "records", "chartsRequired": false, "images": 0 },
+    { "pageId": "page-manual-invoice", "title": "手工开票", "htmlSrc": "pages/manual-invoice.html", "navActive": "manual", "chartsRequired": false, "images": 0 }
+  ],
+  "visibleWiringPlan": [
+    { "from": "page-login", "to": "page-home", "domId": "login-submit", "label": "登录成功" },
+    { "from": "page-home", "to": "page-invoice-apply", "domId": "cta-apply", "label": "立即开票" },
+    { "from": "page-home", "to": "page-invoice-records", "domId": "link-records-home", "label": "查看开票记录" }
+  ],
+  "hiddenInteractionPlan": "各页面侧栏导航 nav-home/nav-apply/nav-records/nav-manual 均为 hideEdge:true 全局导航快捷入口",
+  "environmentNote": "Host environment has no Node.js CLI available; fill-html-head.mjs / scan-design-directory.mjs could not run. Head infrastructure (theme-vars inlined CSS, @theme inline bridge, semantic-token-fallback, Tailwind v4 CDN, Lucide CDN, Chart.js CDN) was hand-authored per spec; .design validated manually against invariants."
+}

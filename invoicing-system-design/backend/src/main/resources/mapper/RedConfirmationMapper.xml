@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.invoice.mapper.RedConfirmationMapper">
+    <select id="selectAll" resultType="RedConfirmation">
+        SELECT * FROM red_confirmation ORDER BY created_at DESC
+    </select>
+    <select id="selectById" parameterType="long" resultType="RedConfirmation">
+        SELECT * FROM red_confirmation WHERE id = #{id}
+    </select>
+    <select id="selectByConfirmationNo" parameterType="string" resultType="RedConfirmation">
+        SELECT * FROM red_confirmation WHERE confirmation_no = #{confirmationNo}
+    </select>
+    <select id="selectByInvoiceId" parameterType="long" resultType="RedConfirmation">
+        SELECT * FROM red_confirmation WHERE invoice_id = #{invoiceId} ORDER BY created_at DESC
+    </select>
+    <select id="selectByStatus" parameterType="string" resultType="RedConfirmation">
+        SELECT * FROM red_confirmation WHERE status = #{status} ORDER BY created_at DESC
+    </select>
+    <select id="selectByCustomerId" parameterType="long" resultType="RedConfirmation">
+        SELECT * FROM red_confirmation WHERE customer_id = #{customerId} ORDER BY created_at DESC
+    </select>
+    <insert id="insert" parameterType="RedConfirmation" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO red_confirmation (confirmation_no, invoice_id, customer_id, cancel_type, cancel_reason, cancel_amount, status, initiator_id, initiator_name, confirmer_id, confirmer_name, initiate_time, confirm_time, expire_time, remark)
+        VALUES (#{confirmationNo}, #{invoiceId}, #{customerId}, #{cancelType}, #{cancelReason}, #{cancelAmount}, #{status}, #{initiatorId}, #{initiatorName}, #{confirmerId}, #{confirmerName}, #{initiateTime}, #{confirmTime}, #{expireTime}, #{remark})
+    </insert>
+    <update id="update" parameterType="RedConfirmation">
+        UPDATE red_confirmation SET
+            confirmation_no = #{confirmationNo},
+            invoice_id = #{invoiceId},
+            customer_id = #{customerId},
+            cancel_type = #{cancelType},
+            cancel_reason = #{cancelReason},
+            cancel_amount = #{cancelAmount},
+            status = #{status},
+            initiator_id = #{initiatorId},
+            initiator_name = #{initiatorName},
+            confirmer_id = #{confirmerId},
+            confirmer_name = #{confirmerName},
+            initiate_time = #{initiateTime},
+            confirm_time = #{confirmTime},
+            expire_time = #{expireTime},
+            remark = #{remark}
+        WHERE id = #{id}
+    </update>
+</mapper>

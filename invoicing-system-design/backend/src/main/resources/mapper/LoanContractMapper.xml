@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.invoice.mapper.LoanContractMapper">
+    <select id="selectAll" resultType="LoanContract">
+        SELECT * FROM loan_contract ORDER BY created_at DESC
+    </select>
+    <select id="selectById" parameterType="long" resultType="LoanContract">
+        SELECT * FROM loan_contract WHERE id = #{id}
+    </select>
+    <select id="selectByContractNo" parameterType="string" resultType="LoanContract">
+        SELECT * FROM loan_contract WHERE contract_no = #{contractNo}
+    </select>
+    <select id="selectByCustomerId" parameterType="long" resultType="LoanContract">
+        SELECT * FROM loan_contract WHERE customer_id = #{customerId} ORDER BY created_at DESC
+    </select>
+    <insert id="insert" parameterType="LoanContract" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO loan_contract (contract_no, customer_id, principal, annual_rate, start_date, end_date, status)
+        VALUES (#{contractNo}, #{customerId}, #{principal}, #{annualRate}, #{startDate}, #{endDate}, #{status})
+    </insert>
+    <update id="update" parameterType="LoanContract">
+        UPDATE loan_contract SET
+            contract_no = #{contractNo},
+            customer_id = #{customerId},
+            principal = #{principal},
+            annual_rate = #{annualRate},
+            start_date = #{startDate},
+            end_date = #{endDate},
+            status = #{status}
+        WHERE id = #{id}
+    </update>
+</mapper>

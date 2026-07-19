@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.invoice.mapper.InvoiceDetailMapper">
+    <select id="selectByInvoiceId" parameterType="long" resultType="InvoiceDetail">
+        SELECT * FROM invoice_detail WHERE invoice_id = #{invoiceId}
+    </select>
+    <insert id="insert" parameterType="InvoiceDetail" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO invoice_detail (invoice_id, repayment_record_id, contract_id, contract_no, fee_type, tax_class_code, tax_class_name, interest_start_date, interest_end_date, principal_amount, annual_rate, interest_amount, tax_rate, tax_amount, total_amount)
+        VALUES (#{invoiceId}, #{repaymentRecordId}, #{contractId}, #{contractNo}, #{feeType}, #{taxClassCode}, #{taxClassName}, #{interestStartDate}, #{interestEndDate}, #{principalAmount}, #{annualRate}, #{interestAmount}, #{taxRate}, #{taxAmount}, #{totalAmount})
+    </insert>
+    <delete id="deleteByInvoiceId" parameterType="long">
+        DELETE FROM invoice_detail WHERE invoice_id = #{invoiceId}
+    </delete>
+    <select id="countByFeeType" resultType="java.util.Map">
+        SELECT fee_type AS feeType, COUNT(*) AS count, COALESCE(SUM(total_amount), 0) AS totalAmount
+        FROM invoice_detail
+        GROUP BY fee_type
+    </select>
+</mapper>
