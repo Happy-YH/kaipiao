@@ -2,6 +2,7 @@ package com.example.invoice.controller;
 
 import com.example.invoice.dto.request.InvoiceCreateRequest;
 import com.example.invoice.dto.response.Result;
+import com.example.invoice.entity.Invoice;
 import com.example.invoice.service.InvoiceService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -18,26 +19,19 @@ public class InvoiceController {
     private InvoiceService invoiceService;
 
     /**
-     * 查询发票列表，支持按客户ID、状态、种类筛选
-     * @param customerId 客户ID（可选）
-     * @param status 发票状态（可选）
-     * @param kind 发票种类（可选）
-     * @return 发票列表结果
+     * 查询发票列表，支持多维度组合查询：客户ID、状态、种类、合同号、发票类型、开票日期范围
      */
     @GetMapping
-    public Result getAllInvoices(@RequestParam(required = false) Long customerId,
-                                 @RequestParam(required = false) String status,
-                                 @RequestParam(required = false) String kind) {
-        if (customerId != null) {
-            return invoiceService.getInvoicesByCustomer(customerId);
-        }
-        if (status != null && !status.isEmpty()) {
-            return invoiceService.getInvoicesByStatus(status);
-        }
-        if (kind != null && !kind.isEmpty()) {
-            return invoiceService.getInvoicesByKind(kind);
-        }
-        return invoiceService.getAllInvoices();
+    public Result<List<Invoice>> getAllInvoices(@RequestParam(required = false) Long customerId,
+                                                 @RequestParam(required = false) String status,
+                                                 @RequestParam(required = false) String kind,
+                                                 @RequestParam(required = false) String contractNo,
+                                                 @RequestParam(required = false) String invoiceType,
+                                                 @RequestParam(required = false) String startDate,
+                                                 @RequestParam(required = false) String endDate,
+                                                 @RequestParam(required = false, defaultValue = "1") int page,
+                                                 @RequestParam(required = false, defaultValue = "20") int size) {
+        return invoiceService.queryInvoices(customerId, status, kind, contractNo, invoiceType, startDate, endDate, page, size);
     }
 
     /**

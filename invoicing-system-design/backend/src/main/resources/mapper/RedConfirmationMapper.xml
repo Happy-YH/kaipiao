@@ -20,8 +20,8 @@
         SELECT * FROM red_confirmation WHERE customer_id = #{customerId} ORDER BY created_at DESC
     </select>
     <insert id="insert" parameterType="RedConfirmation" useGeneratedKeys="true" keyProperty="id">
-        INSERT INTO red_confirmation (confirmation_no, invoice_id, customer_id, cancel_type, cancel_reason, cancel_amount, status, initiator_id, initiator_name, confirmer_id, confirmer_name, initiate_time, confirm_time, expire_time, remark)
-        VALUES (#{confirmationNo}, #{invoiceId}, #{customerId}, #{cancelType}, #{cancelReason}, #{cancelAmount}, #{status}, #{initiatorId}, #{initiatorName}, #{confirmerId}, #{confirmerName}, #{initiateTime}, #{confirmTime}, #{expireTime}, #{remark})
+        INSERT INTO red_confirmation (confirmation_no, invoice_id, customer_id, cancel_type, cancel_reason, cancel_amount, status, initiator_id, initiator_name, confirmer_id, confirmer_name, initiate_time, confirm_time, expire_time, remark, red_repayment_record_ids)
+        VALUES (#{confirmationNo}, #{invoiceId}, #{customerId}, #{cancelType}, #{cancelReason}, #{cancelAmount}, #{status}, #{initiatorId}, #{initiatorName}, #{confirmerId}, #{confirmerName}, #{initiateTime}, #{confirmTime}, #{expireTime}, #{remark}, #{redRepaymentRecordIds})
     </insert>
     <update id="update" parameterType="RedConfirmation">
         UPDATE red_confirmation SET
@@ -39,7 +39,8 @@
             initiate_time = #{initiateTime},
             confirm_time = #{confirmTime},
             expire_time = #{expireTime},
-            remark = #{remark}
+            remark = #{remark},
+            red_repayment_record_ids = #{redRepaymentRecordIds}
         WHERE id = #{id}
     </update>
 </mapper>

@@ -4,7 +4,7 @@
       <el-form :inline="true" :model="searchForm">
         <el-form-item label="客户名称">
           <el-select v-model="searchForm.customerId" placeholder="请选择客户">
-            <el-option v-for="customer in customers" :key="customer.id" :label="customer.name" :value="customer.id"></el-option>
+            <el-option v-for="customer in customers" :key="customer.id" :label="customer.customerName" :value="customer.id"></el-option>
           </el-select>
         </el-form-item>
         <el-form-item label="开票状态">
@@ -83,6 +83,7 @@
 <script>
 import { getAllCustomers } from '@/api/customer'
 import { getAllRecords } from '@/api/repayment'
+import { getAllTasks, createTask, addBatchItems, startTask, pauseTask, resumeTask } from '@/api/batch'
 
 export default {
   name: 'BatchInvoice',
@@ -95,35 +96,13 @@ export default {
       tableData: [],
       selectedItems: [],
       customers: [],
-      taskList: [
-        {
-          id: 1,
-          taskName: '2024年1月批量开票',
-          taskType: 'INVOICE',
-          totalCount: 100,
-          successCount: 85,
-          failedCount: 5,
-          progress: 90,
-          status: 'RUNNING',
-          createdAt: '2024-01-15'
-        },
-        {
-          id: 2,
-          taskName: '2024年2月批量开票',
-          taskType: 'INVOICE',
-          totalCount: 80,
-          successCount: 80,
-          failedCount: 0,
-          progress: 100,
-          status: 'COMPLETED',
-          createdAt: '2024-02-20'
-        }
-      ]
+      taskList: []
     }
   },
   mounted() {
     this.loadCustomers()
     this.loadRecords()
+    this.loadTasks()
   },
   methods: {
     loadCustomers() {
@@ -136,6 +115,13 @@ export default {
         this.tableData = res.data
       })
     },
+    loadTasks() {
+      getAllTasks().then(res => {
+        this.taskList = res.data || []
+      }).catch(() => {
+        this.taskList = []
+      })
+    },
     handleSearch() {
       getAllRecords(this.searchForm).then(res => {
         this.tableData = res.data
@@ -145,19 +131,52 @@ export default {
       this.selectedItems = val
     },
     handleBatchInvoice() {
-      this.$message.success(`已创建批量开票任务，包含 ${this.selectedItems.length} 条记录`)
+      if (this.selectedItems.length === 0) return
+      const taskName = `批量开票-${new Date().toLocaleString()}`
+      const taskType = 'INVOICE'
+      const totalCount = this.selectedItems.length
+      createTask(taskName, taskType, totalCount).then(res => {
+        const taskId = res.data.id
+        const items = this.selectedItems.map(record => ({
+          taskId,
+          recordId: record.id,
+          contractId: record.contractId,
+          customerId: record.customerId,
+          amount: record.taxableAmount,
+          status: 'PENDING'
+        }))
+        addBatchItems(taskId, items).then(() => {
+          this.$message.success(`已创建批量任务 #${taskId}，正在启动...`)
+          startTask(taskId).then(() => {
+            this.$message.success('批量任务已完成')
+            this.loadTasks()
+            this.loadRecords()
+          }).catch(() => {
+            this.loadTasks()
+          })
+        })
+      })
     },
     handleStartTask(row) {
-      row.status = 'RUNNING'
-      this.$message.success('任务已启动')
+      startTask(row.id).then(res => {
+        this.$message.success('任务已完成')
+        const idx = this.taskList.findIndex(t => t.id === row.id)
+        if (idx > -1) this.taskList.splice(idx, 1, res.data)
+      })
     },
     handlePauseTask(row) {
-      row.status = 'PAUSED'
-      this.$message.info('任务已暂停')
+      pauseTask(row.id).then(res => {
+        this.$message.info('任务已暂停')
+        const idx = this.taskList.findIndex(t => t.id === row.id)
+        if (idx > -1) this.taskList.splice(idx, 1, res.data)
+      })
     },
     handleResumeTask(row) {
-      row.status = 'RUNNING'
-      this.$message.success('任务已继续')
+      resumeTask(row.id).then(res => {
+        this.$message.success('任务已继续')
+        const idx = this.taskList.findIndex(t => t.id === row.id)
+        if (idx > -1) this.taskList.splice(idx, 1, res.data)
+      })
     },
     getFeeTypeName(type) {
       const types = {
@@ -208,9 +227,10 @@ export default {
       return types[status] || 'info'
     },
     getProgressColor(progress) {
-      if (progress === 100) return '#1989FA'
-      if (progress >= 80) return '#67C23A'
-      if (progress >= 50) return '#E6A23C'
+      const p = Number(progress) || 0
+      if (p === 100) return '#1989FA'
+      if (p >= 80) return '#67C23A'
+      if (p >= 50) return '#E6A23C'
       return '#F56C6C'
     },
     formatDate(date) {

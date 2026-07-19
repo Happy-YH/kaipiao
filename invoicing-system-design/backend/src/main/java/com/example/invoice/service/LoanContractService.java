@@ -81,4 +81,20 @@ public class LoanContractService {
         loanContractMapper.update(contract);
         return Result.success("更新成功", contract);
     }
+
+    /**
+     * 删除合同（软删除，状态置为 INACTIVE）
+     *
+     * @param id 合同ID
+     * @return 删除结果
+     */
+    public Result<LoanContract> deleteContract(Long id) {
+        LoanContract existing = loanContractMapper.selectById(id);
+        if (existing == null) {
+            return Result.error("合同不存在");
+        }
+        existing.setStatus("INACTIVE");
+        loanContractMapper.update(existing);
+        return Result.success("删除成功", existing);
+    }
 }

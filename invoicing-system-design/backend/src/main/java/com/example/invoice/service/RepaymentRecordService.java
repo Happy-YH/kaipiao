@@ -77,6 +77,7 @@ public class RepaymentRecordService {
 
     /**
      * 创建还款记录，自动生成编号、默认税率和开票状态
+     * 可开票金额 = 还款总额 - 本金部分（本金不可开票，仅利息/手续费/罚息等可开票）
      *
      * @param record 还款记录信息
      * @return 创建成功的还款记录
@@ -92,11 +93,22 @@ public class RepaymentRecordService {
         if (record.getInvoicedAmount() == null) {
             record.setInvoicedAmount(BigDecimal.ZERO);
         }
-        if (record.getTaxAmount() == null) {
-            record.setTaxAmount(record.getInterestAmount().multiply(record.getTaxRate()).divide(new BigDecimal("100")));
+        // 计算可开票金额 = 还款总额 - 本金部分
+        BigDecimal totalAmount = record.getTotalAmount() != null ? record.getTotalAmount() : BigDecimal.ZERO;
+        BigDecimal principalAmount = record.getPrincipalAmount() != null ? record.getPrincipalAmount() : BigDecimal.ZERO;
+        BigDecimal taxableAmount = totalAmount.subtract(principalAmount);
+        if (taxableAmount.compareTo(BigDecimal.ZERO) < 0) {
+            taxableAmount = BigDecimal.ZERO;
         }
-        record.setTaxableAmount(record.getTotalAmount());
-        record.setRemainingAmount(record.getTotalAmount().subtract(record.getInvoicedAmount()));
+        // 若用户未指定可开票金额则自动计算
+        if (record.getTaxableAmount() == null) {
+            record.setTaxableAmount(taxableAmount);
+        }
+        if (record.getTaxAmount() == null) {
+            BigDecimal interestAmount = record.getInterestAmount() != null ? record.getInterestAmount() : BigDecimal.ZERO;
+            record.setTaxAmount(interestAmount.multiply(record.getTaxRate()).divide(new BigDecimal("100"), 2, BigDecimal.ROUND_HALF_UP));
+        }
+        record.setRemainingAmount(record.getTaxableAmount().subtract(record.getInvoicedAmount()));
         repaymentRecordMapper.insert(record);
         return Result.success("创建成功", record);
     }
@@ -112,11 +124,17 @@ public class RepaymentRecordService {
         if (existing == null) {
             return Result.error("还款记录不存在");
         }
-        record.setRemainingAmount(record.getTaxableAmount().subtract(record.getInvoicedAmount()));
+        BigDecimal taxable = record.getTaxableAmount() != null ? record.getTaxableAmount() : BigDecimal.ZERO;
+        BigDecimal invoiced = record.getInvoicedAmount() != null ? record.getInvoicedAmount() : BigDecimal.ZERO;
+        // 上限校验：累计开票金额不能超过可开票金额
+        if (invoiced.compareTo(taxable) > 0) {
+            return Result.error("累计开票金额不能超过可开票金额");
+        }
+        record.setRemainingAmount(taxable.subtract(invoiced));
         String status;
-        if (record.getInvoicedAmount().compareTo(BigDecimal.ZERO) == 0) {
+        if (invoiced.compareTo(BigDecimal.ZERO) == 0) {
             status = "UNINVOICED";
-        } else if (record.getInvoicedAmount().compareTo(record.getTaxableAmount()) == 0) {
+        } else if (invoiced.compareTo(taxable) == 0) {
             status = "INVOICED";
         } else {
             status = "PARTIAL_INVOICED";

@@ -43,7 +43,34 @@ public class JwtUtil {
     public static Long getUserId(String token) {
         try {
             Claims claims = parseToken(token);
-            return claims.get("userId", Long.class);
+            Object val = claims.get("userId");
+            if (val instanceof Number) {
+                return ((Number) val).longValue();
+            }
+            if (val instanceof String) {
+                return Long.parseLong((String) val);
+            }
+            return null;
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    public static String getUsername(String token) {
+        try {
+            Claims claims = parseToken(token);
+            Object val = claims.get("username");
+            return val != null ? val.toString() : null;
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    public static String getRole(String token) {
+        try {
+            Claims claims = parseToken(token);
+            Object val = claims.get("role");
+            return val != null ? val.toString() : null;
         } catch (Exception e) {
             return null;
         }

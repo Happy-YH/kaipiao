@@ -173,7 +173,7 @@ export default {
     searchRecords() {
       const params = {}
       if (this.filterForm.customerId) params.customerId = this.filterForm.customerId
-      if (this.filterForm.invoiceStatus) params.status = this.filterForm.invoiceStatus
+      if (this.filterForm.contractNo) params.contractNo = this.filterForm.contractNo
       this.$http.get('/repayments', { params }).then(res => {
         let list = res.data || []
         this.total = list.length

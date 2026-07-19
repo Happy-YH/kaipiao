@@ -37,6 +37,14 @@ export const createInvoice = (data) => {
   })
 }
 
+export const batchCreateInvoice = (data) => {
+  return service({
+    url: '/invoices/batch',
+    method: 'post',
+    data
+  })
+}
+
 export const submitForReview = (id) => {
   return service({
     url: `/invoices/${id}/submit-review`,
@@ -44,11 +52,11 @@ export const submitForReview = (id) => {
   })
 }
 
-export const reviewInvoice = (id, approved) => {
+export const reviewInvoice = (id, pass, rejectReason) => {
   return service({
     url: `/invoices/${id}/review`,
     method: 'post',
-    params: { approved }
+    params: { pass, rejectReason }
   })
 }
 
@@ -62,6 +70,13 @@ export const issueInvoice = (id) => {
 export const deliverInvoice = (id) => {
   return service({
     url: `/invoices/${id}/deliver`,
+    method: 'post'
+  })
+}
+
+export const retryInvoice = (id) => {
+  return service({
+    url: `/invoices/${id}/retry`,
     method: 'post'
   })
 }

@@ -69,4 +69,14 @@ public class LoanContractController {
         contract.setId(id);
         return loanContractService.updateContract(contract);
     }
+
+    /**
+     * 删除合同（仅状态置为 INACTIVE）
+     * @param id 合同ID
+     * @return 删除结果
+     */
+    @DeleteMapping("/{id}")
+    public Result deleteContract(@PathVariable Long id) {
+        return loanContractService.deleteContract(id);
+    }
 }

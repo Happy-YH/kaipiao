@@ -134,15 +134,27 @@
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
           </button>
 
-          <div class="user-menu">
+          <div class="user-menu" @click="handleUserMenuClick">
             <div class="user-avatar">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
             </div>
             <div class="user-info">
               <span class="user-name">{{ username }}</span>
-              <span class="user-role">系统管理员</span>
+              <span class="user-role">{{ roleText }}</span>
             </div>
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+
+            <div class="user-dropdown" v-if="dropdownOpen" @click.stop>
+              <div class="dropdown-header">
+                <div class="dropdown-name">{{ username }}</div>
+                <div class="dropdown-role">{{ roleText }}</div>
+              </div>
+              <div class="dropdown-divider"></div>
+              <button class="dropdown-item" @click="handleLogout">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" x2="9" y1="12" y2="12"/></svg>
+                <span>退出登录</span>
+              </button>
+            </div>
           </div>
         </div>
       </header>
@@ -158,10 +170,20 @@ export default {
   data() {
     return {
       sidebarCollapsed: false,
-      username: localStorage.getItem('username') || '管理员'
+      dropdownOpen: false,
+      username: localStorage.getItem('username') || '管理员',
+      role: localStorage.getItem('role') || 'ADMIN'
     }
   },
   computed: {
+    roleText() {
+      const map = {
+        'ADMIN': '系统管理员',
+        'OPERATOR': '操作员',
+        'REVIEWER': '审核员'
+      }
+      return map[this.role] || '系统管理员'
+    },
     breadcrumbs() {
       const routes = []
       const matched = this.$route.matched
@@ -173,9 +195,39 @@ export default {
       return routes
     }
   },
+  mounted() {
+    document.addEventListener('click', this.handleOutsideClick)
+  },
+  beforeDestroy() {
+    document.removeEventListener('click', this.handleOutsideClick)
+  },
   beforeMount() {
     if (!localStorage.getItem('token')) {
       this.$router.push('/login')
+    }
+  },
+  methods: {
+    handleUserMenuClick() {
+      this.dropdownOpen = !this.dropdownOpen
+    },
+    handleOutsideClick(e) {
+      const menu = this.$el.querySelector('.user-menu')
+      if (menu && !menu.contains(e.target)) {
+        this.dropdownOpen = false
+      }
+    },
+    handleLogout() {
+      this.$confirm('确定要退出登录吗？', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        localStorage.removeItem('token')
+        localStorage.removeItem('username')
+        localStorage.removeItem('role')
+        this.$message.success('已退出登录')
+        this.$router.push('/login')
+      }).catch(() => {})
     }
   }
 }
@@ -491,10 +543,66 @@ export default {
   border-left: 1px solid var(--fin-border);
   cursor: pointer;
   transition: background-color 0.15s ease;
+  position: relative;
 }
 
 .user-menu:hover {
   background: var(--fin-muted);
+}
+
+.user-dropdown {
+  position: absolute;
+  top: calc(100% + 4px);
+  right: 0;
+  min-width: 200px;
+  background: var(--fin-card);
+  border: 1px solid var(--fin-border);
+  border-radius: var(--fin-radius-md);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  z-index: 1000;
+  overflow: hidden;
+}
+
+.dropdown-header {
+  padding: 12px 16px;
+  background: var(--fin-muted);
+}
+
+.dropdown-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--fin-foreground);
+}
+
+.dropdown-role {
+  font-size: 11px;
+  color: var(--fin-muted-foreground);
+  margin-top: 2px;
+}
+
+.dropdown-divider {
+  height: 1px;
+  background: var(--fin-border);
+}
+
+.dropdown-item {
+  width: 100%;
+  padding: 10px 16px;
+  border: none;
+  background: transparent;
+  color: var(--fin-foreground);
+  font-size: 13px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  text-align: left;
+  transition: background-color 0.15s ease;
+}
+
+.dropdown-item:hover {
+  background: var(--fin-muted);
+  color: var(--fin-destructive);
 }
 
 .user-avatar {

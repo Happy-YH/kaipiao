@@ -32,34 +32,36 @@
         </div>
 
         <el-form ref="loginForm" :model="loginForm" :rules="rules" class="lc-form">
-          <div class="form-field">
-            <label class="form-label">手机号</label>
+          <el-form-item prop="username" class="form-field">
+            <label class="form-label" slot="label">用户名</label>
             <div class="phone-input">
               <span class="phone-prefix">+86</span>
-              <el-input v-model="loginForm.username" placeholder="请输入 11 位手机号" inputmode="numeric" size="medium"></el-input>
+              <el-input v-model="loginForm.username" placeholder="请输入用户名（admin/operator/reviewer）" size="medium"></el-input>
             </div>
-          </div>
+          </el-form-item>
 
-          <div class="form-field">
-            <label class="form-label">密码</label>
-            <el-input v-model="loginForm.password" type="password" placeholder="请输入密码" size="medium"></el-input>
-          </div>
+          <el-form-item prop="password" class="form-field">
+            <label class="form-label" slot="label">密码</label>
+            <el-input v-model="loginForm.password" type="password" placeholder="请输入密码" size="medium" @keyup.enter.native="handleLogin"></el-input>
+          </el-form-item>
 
           <div class="lc-row">
             <label class="remember">
               <input type="checkbox" class="checkbox" v-model="rememberMe"> 记住登录
             </label>
-            <button type="text" class="btn-link">忘记密码？</button>
+            <button type="button" class="btn-link">忘记密码？</button>
           </div>
 
           <label class="agree">
             <input type="checkbox" class="checkbox" checked>
-            <span>我已阅读并同意 <button type="text" class="btn-link">《服务协议》</button> 与 <button type="text" class="btn-link">《隐私政策》</button></span>
+            <span>我已阅读并同意 <button type="button" class="btn-link">《服务协议》</button> 与 <button type="button" class="btn-link">《隐私政策》</button></span>
           </label>
 
-          <el-button type="primary" class="lc-submit" @click="handleLogin">
+          <el-button type="primary" class="lc-submit" :loading="loading" @click="handleLogin">
             <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" x2="3" y1="12" y2="12"/></svg> 登 录
           </el-button>
+
+          <div class="lc-tip">演示账号：admin / operator / reviewer，密码均为 123456</div>
         </el-form>
 
         <div class="lc-foot">

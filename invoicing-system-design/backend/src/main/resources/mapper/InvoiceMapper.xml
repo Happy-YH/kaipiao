@@ -23,8 +23,8 @@
         SELECT * FROM invoice WHERE original_invoice_id = #{originalInvoiceId} ORDER BY created_at DESC
     </select>
     <insert id="insert" parameterType="Invoice" useGeneratedKeys="true" keyProperty="id">
-        INSERT INTO invoice (invoice_no, invoice_code, invoice_type, invoice_kind, customer_id, total_amount, tax_amount, taxable_amount, status, red_confirmation_no, original_invoice_id, remark, issue_date, created_by)
-        VALUES (#{invoiceNo}, #{invoiceCode}, #{invoiceType}, #{invoiceKind}, #{customerId}, #{totalAmount}, #{taxAmount}, #{taxableAmount}, #{status}, #{redConfirmationNo}, #{originalInvoiceId}, #{remark}, #{issueDate}, #{createdBy})
+        INSERT INTO invoice (invoice_no, invoice_code, invoice_type, invoice_kind, customer_id, total_amount, tax_amount, taxable_amount, status, red_confirmation_no, original_invoice_id, remark, external_invoice_id, external_invoice_no, external_invoice_code, pdf_url, xml_url, qr_code_url, check_code, machine_no, fail_reason, issue_date, created_by)
+        VALUES (#{invoiceNo}, #{invoiceCode}, #{invoiceType}, #{invoiceKind}, #{customerId}, #{totalAmount}, #{taxAmount}, #{taxableAmount}, #{status}, #{redConfirmationNo}, #{originalInvoiceId}, #{remark}, #{externalInvoiceId}, #{externalInvoiceNo}, #{externalInvoiceCode}, #{pdfUrl}, #{xmlUrl}, #{qrCodeUrl}, #{checkCode}, #{machineNo}, #{failReason}, #{issueDate}, #{createdBy})
     </insert>
     <update id="update" parameterType="Invoice">
         UPDATE invoice SET
@@ -40,6 +40,15 @@
             red_confirmation_no = #{redConfirmationNo},
             original_invoice_id = #{originalInvoiceId},
             remark = #{remark},
+            external_invoice_id = #{externalInvoiceId},
+            external_invoice_no = #{externalInvoiceNo},
+            external_invoice_code = #{externalInvoiceCode},
+            pdf_url = #{pdfUrl},
+            xml_url = #{xmlUrl},
+            qr_code_url = #{qrCodeUrl},
+            check_code = #{checkCode},
+            machine_no = #{machineNo},
+            fail_reason = #{failReason},
             issue_date = #{issueDate},
             created_by = #{createdBy}
         WHERE id = #{id}

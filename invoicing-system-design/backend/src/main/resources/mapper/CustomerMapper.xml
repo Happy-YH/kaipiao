@@ -14,8 +14,8 @@
         SELECT * FROM customer WHERE customer_name LIKE CONCAT('%', #{customerName}, '%') AND status = 1
     </select>
     <insert id="insert" parameterType="Customer" useGeneratedKeys="true" keyProperty="id">
-        INSERT INTO customer (customer_name, tax_id, address, phone, bank_name, bank_account, status)
-        VALUES (#{customerName}, #{taxId}, #{address}, #{phone}, #{bankName}, #{bankAccount}, #{status})
+        INSERT INTO customer (customer_name, tax_id, address, phone, bank_name, bank_account, email, contact_name, contact_phone, status)
+        VALUES (#{customerName}, #{taxId}, #{address}, #{phone}, #{bankName}, #{bankAccount}, #{email}, #{contactName}, #{contactPhone}, #{status})
     </insert>
     <update id="update" parameterType="Customer">
         UPDATE customer SET
@@ -25,6 +25,9 @@
             phone = #{phone},
             bank_name = #{bankName},
             bank_account = #{bankAccount},
+            email = #{email},
+            contact_name = #{contactName},
+            contact_phone = #{contactPhone},
             status = #{status}
         WHERE id = #{id}
     </update>

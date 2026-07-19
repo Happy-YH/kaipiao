@@ -6,7 +6,7 @@
           <el-col :span="12">
             <el-form-item label="客户名称" prop="customerId">
               <el-select v-model="invoiceForm.customerId" placeholder="请选择客户" @change="handleCustomerChange">
-                <el-option v-for="customer in customers" :key="customer.id" :label="customer.name" :value="customer.id"></el-option>
+                <el-option v-for="customer in customers" :key="customer.id" :label="customer.customerName" :value="customer.id"></el-option>
               </el-select>
             </el-form-item>
           </el-col>
@@ -22,13 +22,13 @@
         <el-row :gutter="20">
           <el-col :span="12">
             <el-form-item label="开票日期">
-              <el-date-picker v-model="invoiceForm.issueDate" type="date" placeholder="选择日期"></el-date-picker>
+              <el-date-picker v-model="invoiceForm.issueDate" type="date" placeholder="选择日期" style="width: 100%"></el-date-picker>
             </el-form-item>
-            <el-col :span="12">
-              <el-form-item label="备注">
-                <el-input v-model="invoiceForm.remark" placeholder="请输入备注"></el-input>
-              </el-form-item>
-            </el-col>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="备注">
+              <el-input v-model="invoiceForm.remark" placeholder="请输入备注"></el-input>
+            </el-form-item>
           </el-col>
         </el-row>
         <el-divider></el-divider>
@@ -104,7 +104,7 @@
           <el-col :span="8">
             <div class="summary-item">
               <span class="summary-label">价税合计:</span>
-              <span class="summary-value total">{{ totalAmount.toFixed(2) }}</span>
+              <span class="summary-value total">{{ (totalAmount + taxAmount).toFixed(2) }}</span>
             </div>
           </el-col>
         </el-row>

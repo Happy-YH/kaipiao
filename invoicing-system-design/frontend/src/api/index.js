@@ -1,5 +1,6 @@
 import axios from 'axios'
 import { Message } from 'element-ui'
+import router from '@/router'
 
 const service = axios.create({
   baseURL: '/api',
@@ -10,7 +11,8 @@ service.interceptors.request.use(
   config => {
     const token = localStorage.getItem('token')
     if (token) {
-      config.headers['Authorization'] = token
+      // 后端 AuthInterceptor 同时支持 Bearer 前缀与裸 token
+      config.headers['Authorization'] = token.startsWith('Bearer ') ? token : 'Bearer ' + token
     }
     return config
   },
@@ -21,8 +23,20 @@ service.interceptors.request.use(
 
 service.interceptors.response.use(
   response => {
+    // 二进制流响应（导出文件）直接返回，避免对 Blob 调用 .code
+    if (response.config && response.config.responseType === 'blob') {
+      return response
+    }
     const res = response.data
-    if (res.code !== 200) {
+    if (res && res.code !== 200) {
+      // 401 未登录或登录过期，跳转登录
+      if (res.code === 401) {
+        localStorage.removeItem('token')
+        localStorage.removeItem('username')
+        if (router.currentRoute.path !== '/login') {
+          router.push('/login')
+        }
+      }
       Message({
         message: res.message || '请求失败',
         type: 'error',
@@ -33,11 +47,21 @@ service.interceptors.response.use(
     return res
   },
   error => {
-    Message({
-      message: error.message || '网络异常',
-      type: 'error',
-      duration: 3000
-    })
+    const status = error.response && error.response.status
+    if (status === 401) {
+      localStorage.removeItem('token')
+      localStorage.removeItem('username')
+      if (router.currentRoute.path !== '/login') {
+        router.push('/login')
+      }
+      Message({ message: '登录已过期，请重新登录', type: 'error', duration: 3000 })
+    } else {
+      Message({
+        message: (error.response && error.response.data && error.response.data.message) || error.message || '网络异常',
+        type: 'error',
+        duration: 3000
+      })
+    }
     return Promise.reject(error)
   }
 )

@@ -180,6 +180,13 @@ public class RedConfirmationService {
         if (!"PENDING_CONFIRM".equals(confirmation.getStatus())) {
             return Result.error("确认单状态不允许确认");
         }
+        // 超时校验
+        if (confirmation.getExpireTime() != null && confirmation.getExpireTime().before(new Date())) {
+            confirmation.setStatus("EXPIRED");
+            confirmation.setRemark("系统自动处理：确认超时未响应，已自动作废");
+            redConfirmationMapper.update(confirmation);
+            return Result.error("红字确认单已超时，无法确认");
+        }
 
         confirmation.setStatus("CONFIRMED");
         confirmation.setConfirmTime(new Date());
@@ -218,7 +225,8 @@ public class RedConfirmationService {
         redInvoice.setInvoiceType(originalInvoice.getInvoiceType());
         redInvoice.setInvoiceKind("RED");
         redInvoice.setCustomerId(originalInvoice.getCustomerId());
-        redInvoice.setTotalAmount(confirmation.getCancelAmount().negate());
+        // 红字发票金额始终等于原发票全额（取反），保证对冲关系
+        redInvoice.setTotalAmount(originalInvoice.getTotalAmount().negate());
         redInvoice.setTaxAmount(originalInvoice.getTaxAmount().negate());
         redInvoice.setTaxableAmount(originalInvoice.getTaxableAmount().negate());
         redInvoice.setStatus("ISSUED");
@@ -240,6 +248,7 @@ public class RedConfirmationService {
         for (InvoiceDetail originalDetail : originalDetails) {
             InvoiceDetail detail = new InvoiceDetail();
             detail.setInvoiceId(redInvoice.getId());
+            detail.setRepaymentRecordId(originalDetail.getRepaymentRecordId());
             detail.setContractId(originalDetail.getContractId());
             detail.setContractNo(originalDetail.getContractNo());
             detail.setFeeType(originalDetail.getFeeType());
@@ -249,9 +258,9 @@ public class RedConfirmationService {
             detail.setInterestEndDate(originalDetail.getInterestEndDate());
             detail.setPrincipalAmount(originalDetail.getPrincipalAmount());
             detail.setAnnualRate(originalDetail.getAnnualRate());
-            detail.setInterestAmount(originalDetail.getInterestAmount().negate());
+            detail.setInterestAmount(originalDetail.getInterestAmount() != null ? originalDetail.getInterestAmount().negate() : null);
             detail.setTaxRate(originalDetail.getTaxRate());
-            detail.setTaxAmount(originalDetail.getTaxAmount().negate());
+            detail.setTaxAmount(originalDetail.getTaxAmount() != null ? originalDetail.getTaxAmount().negate() : null);
             detail.setTotalAmount(originalDetail.getTotalAmount().negate());
             invoiceDetailMapper.insert(detail);
         }
@@ -295,7 +304,10 @@ public class RedConfirmationService {
 
     /**
      * 重开蓝字发票，部分红冲时按还款记录逐笔重开未被红冲的蓝字发票，并调用金蝶接口完成开票，
-     * 同时更新还款记录开票状态
+     * 同时更新还款记录开票状态。
+     * 支持两种部分红冲场景：
+     *   1) 1:1 场景（原发票仅关联一笔还款记录）：全额红冲原发票后，按差额(原发票金额-实际冲销金额)重开一张蓝票
+     *   2) 1:N 场景（原发票关联多笔还款记录）：对未被红冲的还款记录分别重开蓝票
      *
      * @param confirmation 红字确认单
      */
@@ -307,33 +319,49 @@ public class RedConfirmationService {
         Set<Long> redRecordIds = new HashSet<>();
         if (confirmation.getRedRepaymentRecordIds() != null && !confirmation.getRedRepaymentRecordIds().isEmpty()) {
             for (String idStr : confirmation.getRedRepaymentRecordIds().split(",")) {
-                redRecordIds.add(Long.parseLong(idStr.trim()));
+                try {
+                    redRecordIds.add(Long.parseLong(idStr.trim()));
+                } catch (NumberFormatException ignore) {
+                }
             }
         }
 
-        // 按还款记录分组未被红冲的明细
-        Map<Long, List<InvoiceDetail>> remainingByRecord = new LinkedHashMap<>();
+        // 按还款记录分组原发票明细
+        Map<Long, List<InvoiceDetail>> detailsByRecord = new LinkedHashMap<>();
         for (InvoiceDetail detail : originalDetails) {
             Long recordId = detail.getRepaymentRecordId();
-            if (recordId != null && !redRecordIds.contains(recordId)) {
-                remainingByRecord.computeIfAbsent(recordId, k -> new ArrayList<>()).add(detail);
+            if (recordId != null) {
+                detailsByRecord.computeIfAbsent(recordId, k -> new ArrayList<>()).add(detail);
             }
         }
 
-        // 为每笔未红冲的还款记录重开蓝票
-        for (Map.Entry<Long, List<InvoiceDetail>> entry : remainingByRecord.entrySet()) {
-            Long recordId = entry.getKey();
-            List<InvoiceDetail> details = entry.getValue();
+        // 判断 1:1 场景：原发票仅关联一笔还款记录，且该记录被红冲
+        boolean isOneToOne = detailsByRecord.size() == 1
+                && redRecordIds.equals(detailsByRecord.keySet());
 
-            BigDecimal reissueAmount = details.stream()
-                .map(InvoiceDetail::getTotalAmount)
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
-            BigDecimal reissueTax = details.stream()
-                .map(InvoiceDetail::getTaxAmount)
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
-            BigDecimal reissueTaxable = details.stream()
-                .map(InvoiceDetail::getInterestAmount)
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
+        if (isOneToOne) {
+            // 1:1 场景：按差额重开一张蓝票 (差额 = 原发票金额 - 实际冲销金额)
+            Long onlyRecordId = detailsByRecord.keySet().iterator().next();
+            List<InvoiceDetail> onlyDetails = detailsByRecord.get(onlyRecordId);
+            BigDecimal originalAmount = originalInvoice.getTotalAmount();
+            BigDecimal cancelAmount = confirmation.getCancelAmount() != null ? confirmation.getCancelAmount() : BigDecimal.ZERO;
+            BigDecimal reissueAmount = originalAmount.subtract(cancelAmount);
+            if (reissueAmount.compareTo(BigDecimal.ZERO) <= 0) {
+                // 全额冲销，无需重开
+                RepaymentRecord record = repaymentRecordMapper.selectById(onlyRecordId);
+                if (record != null) {
+                    record.setInvoicedAmount(BigDecimal.ZERO);
+                    record.setRemainingAmount(record.getTaxableAmount());
+                    record.setInvoiceStatus("UNINVOICED");
+                    repaymentRecordMapper.update(record);
+                }
+                return;
+            }
+            // 按比例分摊税额
+            BigDecimal ratio = originalAmount.compareTo(BigDecimal.ZERO) == 0 ? BigDecimal.ZERO
+                    : reissueAmount.divide(originalAmount, 6, BigDecimal.ROUND_HALF_UP);
+            BigDecimal reissueTax = originalInvoice.getTaxAmount().multiply(ratio).setScale(2, BigDecimal.ROUND_HALF_UP);
+            BigDecimal reissueTaxable = reissueAmount.subtract(reissueTax);
 
             Invoice blueInvoice = new Invoice();
             blueInvoice.setInvoiceNo(IdGenerator.generateInvoiceNo());
@@ -345,7 +373,102 @@ public class RedConfirmationService {
             blueInvoice.setTaxableAmount(reissueTaxable);
             blueInvoice.setStatus("ISSUING");
             blueInvoice.setOriginalInvoiceId(confirmation.getInvoiceId());
-            blueInvoice.setRemark("部分红冲后重开，红冲单号：" + confirmation.getConfirmationNo());
+            blueInvoice.setRemark("1:1部分红冲后差额重开，红冲单号：" + confirmation.getConfirmationNo());
+
+            invoiceMapper.insert(blueInvoice);
+
+            // 复制明细（按比例缩减金额）
+            for (InvoiceDetail originalDetail : onlyDetails) {
+                InvoiceDetail detail = new InvoiceDetail();
+                detail.setInvoiceId(blueInvoice.getId());
+                detail.setRepaymentRecordId(originalDetail.getRepaymentRecordId());
+                detail.setContractId(originalDetail.getContractId());
+                detail.setContractNo(originalDetail.getContractNo());
+                detail.setFeeType(originalDetail.getFeeType());
+                detail.setTaxClassCode(originalDetail.getTaxClassCode());
+                detail.setTaxClassName(originalDetail.getTaxClassName());
+                detail.setInterestStartDate(originalDetail.getInterestStartDate());
+                detail.setInterestEndDate(originalDetail.getInterestEndDate());
+                detail.setPrincipalAmount(originalDetail.getPrincipalAmount());
+                detail.setAnnualRate(originalDetail.getAnnualRate());
+                BigDecimal detailTotal = originalDetail.getTotalAmount().multiply(ratio).setScale(2, BigDecimal.ROUND_HALF_UP);
+                BigDecimal detailTax = originalDetail.getTaxAmount() != null
+                        ? originalDetail.getTaxAmount().multiply(ratio).setScale(2, BigDecimal.ROUND_HALF_UP) : BigDecimal.ZERO;
+                BigDecimal detailInterest = originalDetail.getInterestAmount() != null
+                        ? originalDetail.getInterestAmount().multiply(ratio).setScale(2, BigDecimal.ROUND_HALF_UP) : null;
+                detail.setInterestAmount(detailInterest);
+                detail.setTaxRate(originalDetail.getTaxRate());
+                detail.setTaxAmount(detailTax);
+                detail.setTotalAmount(detailTotal);
+                invoiceDetailMapper.insert(detail);
+            }
+
+            // 调用金蝶接口
+            try {
+                KingdeeInvoiceRequest kingdeeRequest = buildKingdeeReissueRequest(blueInvoice);
+                KingdeeInvoiceResponse kingdeeResponse = kingdeeService.issueBlueInvoice(kingdeeRequest);
+                log.info("金蝶1:1差额重开蓝字发票成功，发票号：{}, 关联还款记录：{}", kingdeeResponse.getInvoiceNo(), onlyRecordId);
+                blueInvoice.setStatus("ISSUED");
+                blueInvoice.setIssueDate(kingdeeResponse.getIssueDate() != null ? kingdeeResponse.getIssueDate() : new Date());
+                blueInvoice.setExternalInvoiceId(kingdeeResponse.getInvoiceId());
+                blueInvoice.setExternalInvoiceNo(kingdeeResponse.getInvoiceNo());
+                blueInvoice.setExternalInvoiceCode(kingdeeResponse.getInvoiceCode());
+                blueInvoice.setPdfUrl(kingdeeResponse.getPdfUrl());
+                blueInvoice.setQrCodeUrl(kingdeeResponse.getQrCodeUrl());
+                blueInvoice.setCheckCode(kingdeeResponse.getCheckCode());
+                blueInvoice.setMachineNo(kingdeeResponse.getMachineNo());
+            } catch (Exception e) {
+                log.error("1:1差额重开蓝票失败", e);
+                blueInvoice.setStatus("FAILED");
+                blueInvoice.setFailReason(e.getMessage());
+            }
+            invoiceMapper.update(blueInvoice);
+
+            // 更新还款记录为部分开票
+            RepaymentRecord record = repaymentRecordMapper.selectById(onlyRecordId);
+            if (record != null) {
+                record.setInvoicedAmount(reissueAmount);
+                if (record.getTaxableAmount() != null) {
+                    record.setRemainingAmount(record.getTaxableAmount().subtract(reissueAmount));
+                }
+                record.setInvoiceStatus("INVOICED");
+                repaymentRecordMapper.update(record);
+            }
+            return;
+        }
+
+        // 1:N 场景：为每笔未红冲的还款记录分别重开蓝票
+        Map<Long, List<InvoiceDetail>> remainingByRecord = new LinkedHashMap<>();
+        for (Map.Entry<Long, List<InvoiceDetail>> entry : detailsByRecord.entrySet()) {
+            if (!redRecordIds.contains(entry.getKey())) {
+                remainingByRecord.put(entry.getKey(), entry.getValue());
+            }
+        }
+
+        for (Map.Entry<Long, List<InvoiceDetail>> entry : remainingByRecord.entrySet()) {
+            Long recordId = entry.getKey();
+            List<InvoiceDetail> details = entry.getValue();
+
+            BigDecimal reissueAmount = details.stream()
+                .map(InvoiceDetail::getTotalAmount)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+            BigDecimal reissueTax = details.stream()
+                .map(d -> d.getTaxAmount() != null ? d.getTaxAmount() : BigDecimal.ZERO)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+            // taxableAmount = 总额 - 税额
+            BigDecimal reissueTaxable = reissueAmount.subtract(reissueTax);
+
+            Invoice blueInvoice = new Invoice();
+            blueInvoice.setInvoiceNo(IdGenerator.generateInvoiceNo());
+            blueInvoice.setInvoiceType(originalInvoice.getInvoiceType());
+            blueInvoice.setInvoiceKind("BLUE");
+            blueInvoice.setCustomerId(originalInvoice.getCustomerId());
+            blueInvoice.setTotalAmount(reissueAmount);
+            blueInvoice.setTaxAmount(reissueTax);
+            blueInvoice.setTaxableAmount(reissueTaxable);
+            blueInvoice.setStatus("ISSUING");
+            blueInvoice.setOriginalInvoiceId(confirmation.getInvoiceId());
+            blueInvoice.setRemark("1:N部分红冲后重开，红冲单号：" + confirmation.getConfirmationNo());
 
             invoiceMapper.insert(blueInvoice);
 
@@ -370,29 +493,31 @@ public class RedConfirmationService {
             }
 
             // 调用金蝶接口
-            KingdeeInvoiceRequest kingdeeRequest = buildKingdeeReissueRequest(blueInvoice);
-            KingdeeInvoiceResponse kingdeeResponse = kingdeeService.issueBlueInvoice(kingdeeRequest);
-
-            log.info("金蝶重开蓝字发票成功，发票号：{}, 关联还款记录：{}", kingdeeResponse.getInvoiceNo(), recordId);
-
-            blueInvoice.setStatus("ISSUED");
-            blueInvoice.setIssueDate(kingdeeResponse.getIssueDate() != null ? kingdeeResponse.getIssueDate() : new Date());
-            blueInvoice.setExternalInvoiceId(kingdeeResponse.getInvoiceId());
-            blueInvoice.setExternalInvoiceNo(kingdeeResponse.getInvoiceNo());
-            blueInvoice.setExternalInvoiceCode(kingdeeResponse.getInvoiceCode());
-            blueInvoice.setPdfUrl(kingdeeResponse.getPdfUrl());
-            blueInvoice.setQrCodeUrl(kingdeeResponse.getQrCodeUrl());
-            blueInvoice.setCheckCode(kingdeeResponse.getCheckCode());
-            blueInvoice.setMachineNo(kingdeeResponse.getMachineNo());
+            try {
+                KingdeeInvoiceRequest kingdeeRequest = buildKingdeeReissueRequest(blueInvoice);
+                KingdeeInvoiceResponse kingdeeResponse = kingdeeService.issueBlueInvoice(kingdeeRequest);
+                log.info("金蝶重开蓝字发票成功，发票号：{}, 关联还款记录：{}", kingdeeResponse.getInvoiceNo(), recordId);
+                blueInvoice.setStatus("ISSUED");
+                blueInvoice.setIssueDate(kingdeeResponse.getIssueDate() != null ? kingdeeResponse.getIssueDate() : new Date());
+                blueInvoice.setExternalInvoiceId(kingdeeResponse.getInvoiceId());
+                blueInvoice.setExternalInvoiceNo(kingdeeResponse.getInvoiceNo());
+                blueInvoice.setExternalInvoiceCode(kingdeeResponse.getInvoiceCode());
+                blueInvoice.setPdfUrl(kingdeeResponse.getPdfUrl());
+                blueInvoice.setQrCodeUrl(kingdeeResponse.getQrCodeUrl());
+                blueInvoice.setCheckCode(kingdeeResponse.getCheckCode());
+                blueInvoice.setMachineNo(kingdeeResponse.getMachineNo());
+            } catch (Exception e) {
+                log.error("1:N重开蓝票失败, recordId={}", recordId, e);
+                blueInvoice.setStatus("FAILED");
+                blueInvoice.setFailReason(e.getMessage());
+            }
             invoiceMapper.update(blueInvoice);
 
             // 更新还款记录状态
-            if (recordId != null) {
-                RepaymentRecord record = repaymentRecordMapper.selectById(recordId);
-                if (record != null) {
-                    record.setInvoiceStatus("INVOICED");
-                    repaymentRecordMapper.update(record);
-                }
+            RepaymentRecord record = repaymentRecordMapper.selectById(recordId);
+            if (record != null) {
+                record.setInvoiceStatus("INVOICED");
+                repaymentRecordMapper.update(record);
             }
         }
 

@@ -126,6 +126,27 @@ public class InvoiceService {
     }
 
     /**
+     * 多维度组合查询发票列表，支持客户ID、状态、种类、合同号、发票类型、开票日期范围
+     */
+    public Result<List<Invoice>> queryInvoices(Long customerId, String status, String kind,
+                                               String contractNo, String invoiceType,
+                                               String startDate, String endDate,
+                                               int page, int size) {
+        // 简单分页
+        int offset = Math.max(0, (page - 1) * size);
+        int limit = Math.max(1, Math.min(size, 1000));
+        List<Invoice> invoices = invoiceMapper.selectByCondition(status, startDate, endDate, offset, limit, contractNo, invoiceType);
+        // 客户ID和发票种类在内存中过滤（selectByCondition 未直接支持）
+        if (customerId != null) {
+            invoices.removeIf(inv -> !customerId.equals(inv.getCustomerId()));
+        }
+        if (kind != null && !kind.isEmpty()) {
+            invoices.removeIf(inv -> !kind.equalsIgnoreCase(inv.getInvoiceKind()));
+        }
+        return Result.success(invoices);
+    }
+
+    /**
      * 创建发票，根据请求信息生成草稿发票及明细，自动匹配税目分类
      *
      * @param request 发票创建请求，包含客户ID、发票类型、明细等信息
@@ -147,8 +168,12 @@ public class InvoiceService {
         BigDecimal taxableAmount = BigDecimal.ZERO;
 
         for (InvoiceCreateRequest.InvoiceDetailRequest detailReq : request.getDetails()) {
-            BigDecimal detailTotal = detailReq.getTotalAmount();
-            BigDecimal detailTax = detailReq.getInterestAmount().multiply(detailReq.getTaxRate() != null ? detailReq.getTaxRate() : new BigDecimal("6.00")).divide(new BigDecimal("100"));
+            BigDecimal detailTotal = detailReq.getTotalAmount() != null ? detailReq.getTotalAmount() : BigDecimal.ZERO;
+            BigDecimal interestAmount = detailReq.getInterestAmount() != null ? detailReq.getInterestAmount() : BigDecimal.ZERO;
+            BigDecimal taxRate = detailReq.getTaxRate() != null ? detailReq.getTaxRate() : new BigDecimal("6.00");
+            // 税额 = 利息金额 × 税率 / 100，使用 2 位小数四舍五入
+            BigDecimal detailTax = interestAmount.multiply(taxRate)
+                    .divide(new BigDecimal("100"), 2, BigDecimal.ROUND_HALF_UP);
             BigDecimal detailTaxable = detailTotal.subtract(detailTax);
 
             totalAmount = totalAmount.add(detailTotal);
@@ -165,6 +190,7 @@ public class InvoiceService {
         for (InvoiceCreateRequest.InvoiceDetailRequest detailReq : request.getDetails()) {
             InvoiceDetail detail = new InvoiceDetail();
             detail.setInvoiceId(invoice.getId());
+            detail.setRepaymentRecordId(detailReq.getRepaymentRecordId());
             detail.setContractId(detailReq.getContractId());
             detail.setContractNo(detailReq.getContractNo());
             detail.setFeeType(detailReq.getFeeType());
@@ -183,7 +209,9 @@ public class InvoiceService {
                 detail.setTaxRate(detailReq.getTaxRate() != null ? detailReq.getTaxRate() : new BigDecimal("6.00"));
             }
 
-            BigDecimal detailTax = detail.getInterestAmount().multiply(detail.getTaxRate()).divide(new BigDecimal("100"));
+            BigDecimal interestAmount = detail.getInterestAmount() != null ? detail.getInterestAmount() : BigDecimal.ZERO;
+            BigDecimal detailTax = interestAmount.multiply(detail.getTaxRate())
+                    .divide(new BigDecimal("100"), 2, BigDecimal.ROUND_HALF_UP);
             detail.setTaxAmount(detailTax);
             detail.setTotalAmount(detailReq.getTotalAmount());
 
@@ -407,6 +435,7 @@ public class InvoiceService {
             String email = null;
             String phone = null;
             if (customer != null) {
+                email = customer.getEmail();
                 phone = customer.getPhone();
             }
             kingdeeService.deliverInvoice(
