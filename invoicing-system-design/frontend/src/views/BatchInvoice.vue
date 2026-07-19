@@ -234,7 +234,8 @@ export default {
       return (bytes / (1024 * 1024)).toFixed(1) + ' MB'
     },
     formatNumber(num) {
-      return num.toLocaleString('zh-CN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+      if (num === null || num === undefined || num === '') return '0.00'
+      return Number(num).toLocaleString('zh-CN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
     },
     validateData() {
       if (!this.uploadedFile) {

@@ -72,10 +72,12 @@
           <label class="filter-label">发票状态</label>
           <el-select v-model="filterForm.status" placeholder="全部状态" style="width: 100%">
             <el-option label="草稿" value="DRAFT"></el-option>
-            <el-option label="已开票" value="INVOICED"></el-option>
-            <el-option label="部分红冲" value="PARTIAL_RED"></el-option>
-            <el-option label="已红冲" value="RED_INVOICED"></el-option>
-            <el-option label="处理中" value="PROCESSING"></el-option>
+            <el-option label="待审核" value="PENDING_REVIEW"></el-option>
+            <el-option label="已审核" value="REVIEWED"></el-option>
+            <el-option label="开票中" value="ISSUING"></el-option>
+            <el-option label="已开具" value="ISSUED"></el-option>
+            <el-option label="已交付" value="DELIVERED"></el-option>
+            <el-option label="已红冲" value="RED_CANCELLED"></el-option>
             <el-option label="开票失败" value="FAILED"></el-option>
           </el-select>
         </div>
@@ -118,18 +120,18 @@
           <tbody>
             <tr v-for="(invoice, index) in invoices" :key="invoice.id">
               <td><span class="link-text" @click="showInvoiceDetail(invoice)">{{ invoice.invoiceNo }}</span></td>
-              <td>{{ invoice.customerName }}</td>
-              <td>{{ invoice.contractNo }}</td>
-              <td>{{ invoice.invoiceDate }}</td>
+              <td>{{ getCustomerName(invoice.customerId) }}</td>
+              <td>-</td>
+              <td>{{ invoice.issueDate ? invoice.issueDate.substring(0,10) : '' }}</td>
               <td>
-                <span class="type-tag" :class="invoice.invoiceType === 'BLUE' ? 'blue' : 'red'">
-                  {{ invoice.invoiceType === 'BLUE' ? '蓝字发票' : '红字发票' }}
+                <span class="type-tag" :class="invoice.invoiceKind === 'BLUE' ? 'blue' : 'red'">
+                  {{ invoice.invoiceKind === 'BLUE' ? '蓝字发票' : '红字发票' }}
                 </span>
               </td>
               <td class="text-right">¥ {{ formatNumber(invoice.totalAmount) }}</td>
-              <td class="text-right">¥ {{ formatNumber(invoice.amount) }}</td>
+              <td class="text-right">¥ {{ formatNumber(invoice.taxableAmount) }}</td>
               <td class="text-right">¥ {{ formatNumber(invoice.taxAmount) }}</td>
-              <td>{{ (invoice.taxRate * 100).toFixed(1) }}%</td>
+              <td>-</td>
               <td>
                 <span class="status-tag" :class="getStatusClass(invoice.status)">{{ getStatusText(invoice.status) }}</span>
               </td>
@@ -141,10 +143,10 @@
                   <button class="action-btn download" title="下载发票" @click="downloadInvoice(invoice)">
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>
                   </button>
-                  <button v-if="invoice.status === 'INVOICED'" class="action-btn deliver" title="交付" @click="deliverInvoiceAction(invoice)">
+                  <button v-if="invoice.status === 'ISSUED'" class="action-btn deliver" title="交付" @click="deliverInvoiceAction(invoice)">
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13"/><path d="M22 2L15 22L11 13L2 9L22 2Z"/></svg>
                   </button>
-                  <button v-if="invoice.status === 'INVOICED'" class="action-btn red-chong" title="红字冲销" @click="redInvoice(invoice)">
+                  <button v-if="invoice.status === 'ISSUED' || invoice.status === 'DELIVERED'" class="action-btn red-chong" title="红字冲销" @click="redInvoice(invoice)">
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
                   </button>
                   <button v-if="invoice.status === 'DRAFT'" class="action-btn delete" title="删除" @click="deleteInvoiceAction(invoice)">
@@ -259,22 +261,22 @@
             <div class="ds-item">
               <span class="ds-label">发票类型</span>
               <span class="ds-value">
-                <span class="type-tag" :class="invoiceDetail.invoiceType === 'BLUE' ? 'blue' : 'red'">
-                  {{ invoiceDetail.invoiceType === 'BLUE' ? '蓝字发票' : '红字发票' }}
+                <span class="type-tag" :class="invoiceDetail.invoiceKind === 'BLUE' ? 'blue' : 'red'">
+                  {{ invoiceDetail.invoiceKind === 'BLUE' ? '蓝字发票' : '红字发票' }}
                 </span>
               </span>
             </div>
             <div class="ds-item">
               <span class="ds-label">客户名称</span>
-              <span class="ds-value">{{ invoiceDetail.customerName }}</span>
+              <span class="ds-value">{{ getCustomerName(invoiceDetail.customerId) }}</span>
             </div>
             <div class="ds-item">
               <span class="ds-label">合同编号</span>
-              <span class="ds-value">{{ invoiceDetail.contractNo }}</span>
+              <span class="ds-value">-</span>
             </div>
             <div class="ds-item">
               <span class="ds-label">开票日期</span>
-              <span class="ds-value">{{ invoiceDetail.invoiceDate }}</span>
+              <span class="ds-value">{{ invoiceDetail.issueDate ? invoiceDetail.issueDate.substring(0,10) : '' }}</span>
             </div>
             <div class="ds-item">
               <span class="ds-label">状态</span>
@@ -293,7 +295,7 @@
             </div>
             <div class="ds-item">
               <span class="ds-label">不含税金额</span>
-              <span class="ds-value amount">¥ {{ formatNumber(invoiceDetail.amount) }}</span>
+              <span class="ds-value amount">¥ {{ formatNumber(invoiceDetail.taxableAmount) }}</span>
             </div>
             <div class="ds-item">
               <span class="ds-label">税额</span>
@@ -387,25 +389,24 @@ export default {
   },
   methods: {
     loadCustomers() {
-      this.$http.get('/api/customers').then(res => {
+      this.$http.get('/customers').then(res => {
         this.customers = res.data
       })
     },
     searchInvoices() {
-      const params = {
-        invoiceNo: this.filterForm.invoiceNo,
-        customerId: this.filterForm.customerId,
-        status: this.filterForm.status,
-        page: this.currentPage,
-        size: this.pageSize
-      }
+      const params = {}
+      if (this.filterForm.invoiceNo) params.invoiceNo = this.filterForm.invoiceNo
+      if (this.filterForm.customerId) params.customerId = this.filterForm.customerId
+      if (this.filterForm.status) params.status = this.filterForm.status
       if (this.filterForm.dateRange && this.filterForm.dateRange.length === 2) {
         params.startDate = this.filterForm.dateRange[0]
         params.endDate = this.filterForm.dateRange[1]
       }
-      this.$http.post('/api/invoices/search', params).then(res => {
-        this.invoices = res.data.records
-        this.total = res.data.total
+      this.$http.get('/invoices', { params }).then(res => {
+        let list = res.data || []
+        this.total = list.length
+        const start = (this.currentPage - 1) * this.pageSize
+        this.invoices = list.slice(start, start + this.pageSize)
       })
     },
     resetFilter() {
@@ -422,27 +423,38 @@ export default {
       this.$message.info('导出功能开发中')
     },
     formatNumber(num) {
-      return num.toLocaleString('zh-CN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+      if (num === null || num === undefined || num === '') return '0.00'
+      return Number(num).toLocaleString('zh-CN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+    },
+    getCustomerName(customerId) {
+      const c = this.customers.find(c => c.id === customerId)
+      return c ? c.customerName : '-'
     },
     getStatusText(status) {
       const map = {
         'DRAFT': '草稿',
-        'INVOICED': '已开票',
-        'PARTIAL_RED': '部分红冲',
-        'RED_INVOICED': '已红冲',
-        'PROCESSING': '处理中',
-        'FAILED': '开票失败'
+        'PENDING_REVIEW': '待审核',
+        'REVIEWED': '已审核',
+        'ISSUING': '开票中',
+        'ISSUED': '已开具',
+        'DELIVERED': '已交付',
+        'RED_CANCELLED': '已红冲',
+        'FAILED': '开票失败',
+        'DELETED': '已删除'
       }
       return map[status] || status
     },
     getStatusClass(status) {
       const map = {
         'DRAFT': 'info',
-        'INVOICED': 'success',
-        'PARTIAL_RED': 'warning',
-        'RED_INVOICED': 'danger',
-        'PROCESSING': 'info',
-        'FAILED': 'danger'
+        'PENDING_REVIEW': 'info',
+        'REVIEWED': 'info',
+        'ISSUING': 'warning',
+        'ISSUED': 'success',
+        'DELIVERED': 'success',
+        'RED_CANCELLED': 'danger',
+        'FAILED': 'danger',
+        'DELETED': 'info'
       }
       return map[status] || ''
     },

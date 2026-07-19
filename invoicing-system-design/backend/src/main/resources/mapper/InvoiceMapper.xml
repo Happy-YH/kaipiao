@@ -46,13 +46,13 @@
     </update>
     <select id="countByMonthAndKind" resultType="int">
         SELECT COUNT(*) FROM invoice
-        WHERE DATE_FORMAT(issue_date, '%Y-%m') = #{month}
+        WHERE FORMATDATETIME(issue_date, 'yyyy-MM') = #{month}
         AND invoice_kind = #{kind}
         AND status IN ('ISSUED', 'DELIVERED', 'RED_CANCELLED')
     </select>
     <select id="sumAmountByMonthAndKind" resultType="java.math.BigDecimal">
         SELECT COALESCE(SUM(total_amount), 0) FROM invoice
-        WHERE DATE_FORMAT(issue_date, '%Y-%m') = #{month}
+        WHERE FORMATDATETIME(issue_date, 'yyyy-MM') = #{month}
         AND invoice_kind = #{kind}
         AND status IN ('ISSUED', 'DELIVERED', 'RED_CANCELLED')
     </select>

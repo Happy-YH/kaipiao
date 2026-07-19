@@ -195,7 +195,9 @@ export default {
       const statuses = {
         'PENDING': '待确认',
         'CONFIRMED': '已确认',
-        'CANCELLED': '已取消'
+        'CANCELLED': '已取消',
+        'REJECTED': '已拒绝',
+        'EXPIRED': '已超时'
       }
       return statuses[status] || status
     },
@@ -203,7 +205,9 @@ export default {
       const classes = {
         'PENDING': 'warning',
         'CONFIRMED': 'success',
-        'CANCELLED': 'neutral'
+        'CANCELLED': 'neutral',
+        'REJECTED': 'error',
+        'EXPIRED': 'neutral'
       }
       return classes[status] || 'neutral'
     },
@@ -218,7 +222,8 @@ export default {
       })
     },
     formatNumber(num) {
-      return num.toLocaleString('zh-CN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+      if (num === null || num === undefined || num === '') return '0.00'
+      return Number(num).toLocaleString('zh-CN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
     }
   }
 }

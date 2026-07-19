@@ -20,9 +20,10 @@
         <div class="filter-item">
           <label class="filter-label">合同状态</label>
           <el-select v-model="filterForm.status" placeholder="全部状态" style="width: 100%">
-            <el-option label="正常" value="ACTIVE"></el-option>
-            <el-option label="已结清" value="SETTLED"></el-option>
-            <el-option label="已终止" value="TERMINATED"></el-option>
+            <el-option label="生效" value="ACTIVE"></el-option>
+            <el-option label="结清" value="COMPLETED"></el-option>
+            <el-option label="逾期" value="OVERDUE"></el-option>
+            <el-option label="取消" value="CANCELLED"></el-option>
           </el-select>
         </div>
       </div>
@@ -52,7 +53,6 @@
               <th>客户名称</th>
               <th>贷款金额</th>
               <th>贷款利率</th>
-              <th>贷款期限</th>
               <th>起息日期</th>
               <th>到期日期</th>
               <th>状态</th>
@@ -63,12 +63,11 @@
             <tr v-for="(contract, index) in contracts" :key="contract.id">
               <td>{{ (currentPage - 1) * pageSize + index + 1 }}</td>
               <td>{{ contract.contractNo }}</td>
-              <td>{{ contract.customerName }}</td>
-              <td class="text-right">¥ {{ formatNumber(contract.loanAmount) }}</td>
-              <td>{{ (contract.interestRate * 100).toFixed(2) }}%</td>
-              <td>{{ contract.loanTerm }} 个月</td>
-              <td>{{ contract.startDate }}</td>
-              <td>{{ contract.endDate }}</td>
+              <td>{{ getCustomerName(contract.customerId) }}</td>
+              <td class="text-right">¥ {{ formatNumber(contract.principal) }}</td>
+              <td>{{ ((contract.annualRate || 0) * 100).toFixed(2) }}%</td>
+              <td>{{ contract.startDate ? contract.startDate.substring(0,10) : '' }}</td>
+              <td>{{ contract.endDate ? contract.endDate.substring(0,10) : '' }}</td>
               <td>
                 <span class="status-tag" :class="getStatusClass(contract.status)">
                   {{ getStatusText(contract.status) }}
@@ -112,14 +111,11 @@
             <el-option v-for="c in customers" :key="c.id" :label="c.customerName" :value="c.id"></el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="贷款金额" prop="loanAmount">
-          <el-input v-model.number="formData.loanAmount" placeholder="请输入贷款金额"></el-input>
+        <el-form-item label="贷款金额" prop="principal">
+          <el-input v-model.number="formData.principal" placeholder="请输入贷款金额"></el-input>
         </el-form-item>
         <el-form-item label="贷款利率">
-          <el-input v-model.number="formData.interestRate" placeholder="请输入贷款利率（如 0.06）"></el-input>
-        </el-form-item>
-        <el-form-item label="贷款期限">
-          <el-input v-model.number="formData.loanTerm" placeholder="请输入贷款期限（月）"></el-input>
+          <el-input v-model.number="formData.annualRate" placeholder="请输入贷款利率（如 0.06）"></el-input>
         </el-form-item>
         <el-form-item label="起息日期">
           <el-date-picker v-model="formData.startDate" type="date" placeholder="请选择起息日期" style="width: 100%"></el-date-picker>
@@ -157,16 +153,15 @@ export default {
         id: null,
         contractNo: '',
         customerId: '',
-        loanAmount: 0,
-        interestRate: 0.06,
-        loanTerm: 12,
+        principal: 0,
+        annualRate: 0.06,
         startDate: '',
         endDate: ''
       },
       rules: {
         contractNo: [{ required: true, message: '请输入合同编号', trigger: 'blur' }],
         customerId: [{ required: true, message: '请选择客户', trigger: 'change' }],
-        loanAmount: [{ required: true, message: '请输入贷款金额', trigger: 'blur' }]
+        principal: [{ required: true, message: '请输入贷款金额', trigger: 'blur' }]
       }
     }
   },
@@ -176,18 +171,21 @@ export default {
   },
   methods: {
     loadCustomers() {
-      this.$http.get('/api/customers').then(res => {
+      this.$http.get('/customers').then(res => {
         this.customers = res.data
       })
     },
     searchContracts() {
-      this.$http.post('/api/loan-contracts/search', {
-        ...this.filterForm,
-        page: this.currentPage,
-        size: this.pageSize
+      this.$http.get('/contracts', {
+        params: {
+          customerId: this.filterForm.customerId,
+          contractNo: this.filterForm.contractNo
+        }
       }).then(res => {
-        this.contracts = res.data.records
-        this.total = res.data.total
+        let list = res.data || []
+        this.total = list.length
+        const start = (this.currentPage - 1) * this.pageSize
+        this.contracts = list.slice(start, start + this.pageSize)
       })
     },
     addContract() {
@@ -196,9 +194,8 @@ export default {
         id: null,
         contractNo: '',
         customerId: '',
-        loanAmount: 0,
-        interestRate: 0.06,
-        loanTerm: 12,
+        principal: 0,
+        annualRate: 0.06,
         startDate: '',
         endDate: ''
       }
@@ -213,7 +210,7 @@ export default {
       this.$confirm(`确定删除合同「${contract.contractNo}」吗？`, '提示', {
         type: 'warning'
       }).then(() => {
-        this.$http.delete(`/api/loan-contracts/${contract.id}`).then(() => {
+        this.$http.delete(`/contracts/${contract.id}`).then(() => {
           this.$message.success('删除成功')
           this.searchContracts()
         }).catch(err => {
@@ -225,13 +222,13 @@ export default {
       this.$refs.contractForm.validate((valid) => {
         if (valid) {
           if (this.isEdit) {
-            this.$http.put('/api/loan-contracts', this.formData).then(() => {
+            this.$http.put(`/contracts/${this.formData.id}`, this.formData).then(() => {
               this.$message.success('修改成功')
               this.dialogVisible = false
               this.searchContracts()
             })
           } else {
-            this.$http.post('/api/loan-contracts', this.formData).then(() => {
+            this.$http.post('/contracts', this.formData).then(() => {
               this.$message.success('新增成功')
               this.dialogVisible = false
               this.searchContracts()
@@ -241,21 +238,28 @@ export default {
       })
     },
     formatNumber(num) {
-      return num.toLocaleString('zh-CN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+      if (num === null || num === undefined || num === '') return '0.00'
+      return Number(num).toLocaleString('zh-CN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+    },
+    getCustomerName(customerId) {
+      const c = this.customers.find(c => c.id === customerId)
+      return c ? c.customerName : '-'
     },
     getStatusText(status) {
       const map = {
-        'ACTIVE': '正常',
-        'SETTLED': '已结清',
-        'TERMINATED': '已终止'
+        'ACTIVE': '生效',
+        'COMPLETED': '结清',
+        'OVERDUE': '逾期',
+        'CANCELLED': '取消'
       }
       return map[status] || status
     },
     getStatusClass(status) {
       const map = {
         'ACTIVE': 'success',
-        'SETTLED': 'info',
-        'TERMINATED': 'danger'
+        'COMPLETED': 'info',
+        'OVERDUE': 'warning',
+        'CANCELLED': 'danger'
       }
       return map[status] || ''
     },

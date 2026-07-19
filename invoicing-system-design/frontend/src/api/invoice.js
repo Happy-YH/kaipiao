@@ -39,7 +39,7 @@ export const createInvoice = (data) => {
 
 export const submitForReview = (id) => {
   return service({
-    url: `/invoices/${id}/submit`,
+    url: `/invoices/${id}/submit-review`,
     method: 'post'
   })
 }
@@ -75,7 +75,7 @@ export const deleteInvoice = (id) => {
 
 export const createRedInvoice = (data) => {
   return service({
-    url: '/red-invoices',
+    url: '/red-confirmations',
     method: 'post',
     data
   })

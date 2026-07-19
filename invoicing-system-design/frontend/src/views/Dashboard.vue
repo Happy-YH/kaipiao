@@ -242,27 +242,30 @@ export default {
   },
   methods: {
     loadDashboard() {
-      this.$http.get('/statistics/dashboard', { params: { dateRange: this.dateRange } }).then(res => {
-        const data = res.data
-        this.stats.blueAmount = data.blueAmount || 0
-        this.stats.invoiceCount = data.invoiceCount || 0
-        this.stats.redAmount = data.redAmount || 0
+      this.$http.get('/statistics/dashboard').then(res => {
+        const data = res.data || {}
+        this.stats.blueAmount = data.totalBlueAmount || 0
+        this.stats.invoiceCount = data.totalInvoices || 0
+        this.stats.redAmount = data.totalRedAmount || 0
         this.stats.pendingReview = data.pendingReview || 0
         this.stats.failed = data.failed || 0
       }).catch(() => {})
     },
     loadMonthlyTrend() {
-      this.$http.get('/statistics/monthly-trend', { params: { dateRange: this.dateRange } }).then(res => {
-        const list = res.data || []
-        const maxValue = Math.max(...list.map(item => item.value), 1)
+      this.$http.get('/statistics/monthly-trend', { params: { months: 6 } }).then(res => {
+        const data = res.data || {}
+        const list = data.trend || []
+        const maxValue = Math.max(...list.map(item => (item.blueAmount || 0)), 1)
         this.chartData = list.map(item => ({
-          label: item.label,
-          value: item.value,
-          percent: Math.round((item.value / maxValue) * 100)
+          label: item.month || '',
+          value: item.blueAmount || 0,
+          percent: Math.round(((item.blueAmount || 0) / maxValue) * 100)
         }))
       }).catch(() => {})
     },
     formatNumber(num) {
+      if (num === null || num === undefined || num === '') return '0'
+      num = Number(num)
       if (num >= 100000000) {
         return (num / 100000000).toFixed(2) + '亿'
       } else if (num >= 10000) {

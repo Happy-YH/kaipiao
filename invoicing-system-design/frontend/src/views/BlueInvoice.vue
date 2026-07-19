@@ -48,7 +48,7 @@
           <label class="filter-label">开票状态</label>
           <el-select v-model="filterForm.invoiceStatus" placeholder="全部状态" style="width: 100%">
             <el-option label="未开票" value="UNINVOICED"></el-option>
-            <el-option label="部分开票" value="PARTIAL"></el-option>
+            <el-option label="部分开票" value="PARTIAL_INVOICED"></el-option>
             <el-option label="已开票" value="INVOICED"></el-option>
           </el-select>
         </div>
@@ -82,9 +82,15 @@
       <div class="table-wrapper">
         <el-table ref="repaymentTable" :data="filteredRecords" @selection-change="handleSelectionChange" stripe border style="width: 100%" class="data-table">
           <el-table-column type="selection" width="45" align="center"></el-table-column>
-          <el-table-column prop="customerName" label="客户名称" min-width="120"></el-table-column>
-          <el-table-column prop="contractNo" label="合同编号" min-width="130"></el-table-column>
-          <el-table-column prop="repaymentDate" label="还款日期" min-width="110"></el-table-column>
+          <el-table-column label="客户名称" min-width="120">
+            <template slot-scope="scope">{{ getCustomerNameByContract(scope.row.contractId) }}</template>
+          </el-table-column>
+          <el-table-column label="合同编号" min-width="130">
+            <template slot-scope="scope">{{ getContractNo(scope.row.contractId) }}</template>
+          </el-table-column>
+          <el-table-column label="还款日期" min-width="110">
+            <template slot-scope="scope">{{ scope.row.repaymentDate ? scope.row.repaymentDate.substring(0,10) : '' }}</template>
+          </el-table-column>
           <el-table-column label="利息金额" min-width="110" align="right">
             <template slot-scope="scope">¥ {{ formatNumber(scope.row.interestAmount) }}</template>
           </el-table-column>
@@ -92,17 +98,17 @@
             <template slot-scope="scope">¥ {{ formatNumber(scope.row.invoicedAmount) }}</template>
           </el-table-column>
           <el-table-column label="待开票金额" min-width="110" align="right">
-            <template slot-scope="scope">¥ {{ formatNumber(scope.row.pendingAmount) }}</template>
+            <template slot-scope="scope">¥ {{ formatNumber(scope.row.remainingAmount) }}</template>
           </el-table-column>
           <el-table-column label="税率" min-width="70" align="center">
-            <template slot-scope="scope">{{ (scope.row.taxRate * 100).toFixed(1) }}%</template>
+            <template slot-scope="scope">{{ ((scope.row.taxRate || 0) * 100).toFixed(1) }}%</template>
           </el-table-column>
           <el-table-column label="税额" min-width="100" align="right">
             <template slot-scope="scope">¥ {{ formatNumber(scope.row.taxAmount) }}</template>
           </el-table-column>
           <el-table-column label="开票状态" min-width="90" align="center">
             <template slot-scope="scope">
-              <span class="status-tag" :class="scope.row.status.toLowerCase().replace('_', '-')">{{ getStatusText(scope.row.status) }}</span>
+              <span class="status-tag" :class="getStatusClass(scope.row.invoiceStatus)">{{ getStatusText(scope.row.invoiceStatus) }}</span>
             </template>
           </el-table-column>
         </el-table>
@@ -125,7 +131,7 @@
         </div>
         <div class="summary-item">
           <span class="si-label">待开票金额合计</span>
-          <span class="si-value">¥ {{ formatNumber(calculateSelectedTotal('pendingAmount')) }}</span>
+          <span class="si-value">¥ {{ formatNumber(calculateSelectedTotal('remainingAmount')) }}</span>
         </div>
         <div class="summary-item">
           <span class="si-label">税额合计</span>
@@ -133,7 +139,7 @@
         </div>
         <div class="summary-item">
           <span class="si-label">价税合计</span>
-          <span class="si-value highlight">¥ {{ formatNumber(calculateSelectedTotal('pendingAmount') + calculateSelectedTotal('taxAmount')) }}</span>
+          <span class="si-value highlight">¥ {{ formatNumber(calculateSelectedTotal('remainingAmount') + calculateSelectedTotal('taxAmount')) }}</span>
         </div>
       </div>
       <div class="bb-right">
@@ -170,6 +176,7 @@ export default {
         taxRate: ''
       },
       customers: [],
+      contracts: [],
       records: [],
       selectedIds: [],
       selectedRepayments: [],
@@ -181,29 +188,34 @@ export default {
   computed: {
     filteredRecords() {
       if (this.showOnlyUninvoiced) {
-        return this.records.filter(r => r.status === 'UNINVOICED' || r.status === 'PARTIAL')
+        return this.records.filter(r => r.invoiceStatus === 'UNINVOICED' || r.invoiceStatus === 'PARTIAL_INVOICED')
       }
       return this.records
     }
   },
   mounted() {
     this.loadCustomers()
+    this.loadContracts()
     this.searchRecords()
   },
   methods: {
     loadCustomers() {
-      this.$http.get('/api/customers').then(res => {
+      this.$http.get('/customers').then(res => {
         this.customers = res.data
       })
     },
+    loadContracts() {
+      this.$http.get('/contracts').then(res => {
+        this.contracts = res.data || []
+      })
+    },
     searchRecords() {
-      this.$http.post('/api/repayment-records/search', {
-        ...this.filterForm,
-        page: this.currentPage,
-        size: 10
-      }).then(res => {
-        this.records = res.data.records
-        this.totalPages = res.data.totalPages
+      const params = {}
+      if (this.filterForm.customerId) params.customerId = this.filterForm.customerId
+      if (this.filterForm.invoiceStatus) params.status = this.filterForm.invoiceStatus
+      this.$http.get('/repayments', { params }).then(res => {
+        this.records = res.data || []
+        this.totalPages = Math.max(1, Math.ceil(this.records.length / 10))
         this.$nextTick(() => {
           if (this.$refs.repaymentTable) {
             this.$refs.repaymentTable.clearSelection()
@@ -241,16 +253,36 @@ export default {
       this.selectedRepayments = []
     },
     formatNumber(num) {
-      return num.toLocaleString('zh-CN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+      if (num === null || num === undefined || num === '') return '0.00'
+      return Number(num).toLocaleString('zh-CN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+    },
+    getContractNo(contractId) {
+      const c = this.contracts.find(c => c.id === contractId)
+      return c ? c.contractNo : '-'
+    },
+    getCustomerNameByContract(contractId) {
+      const c = this.contracts.find(c => c.id === contractId)
+      if (!c) return '-'
+      const cust = this.customers.find(cu => cu.id === c.customerId)
+      return cust ? cust.customerName : '-'
     },
     getStatusText(status) {
       const map = {
         'UNINVOICED': '未开票',
-        'PARTIAL': '部分开票',
+        'PARTIAL_INVOICED': '部分开票',
         'INVOICED': '已开票',
-        'RED_INVOICED': '已红冲'
+        'RED_CANCELLED': '已红冲'
       }
       return map[status] || status
+    },
+    getStatusClass(status) {
+      const map = {
+        'UNINVOICED': 'uninvoiced',
+        'PARTIAL_INVOICED': 'partial',
+        'INVOICED': 'invoiced',
+        'RED_CANCELLED': 'red-invoiced'
+      }
+      return map[status] || ''
     },
     previewInvoice() {
       this.$message.info('预览功能开发中')
@@ -258,7 +290,7 @@ export default {
     submitInvoice() {
       if (this.selectedRepayments.length === 0) return
       const count = this.selectedRepayments.length
-      const total = this.calculateSelectedTotal('pendingAmount') + this.calculateSelectedTotal('taxAmount')
+      const total = this.calculateSelectedTotal('remainingAmount') + this.calculateSelectedTotal('taxAmount')
       this.$confirm(`确认将已选 ${count} 条还款记录合并开具一张发票？\n价税合计：¥ ${this.formatNumber(total)}`, '确认开票', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
@@ -267,7 +299,7 @@ export default {
         batchCreateInvoice({
           recordIds: this.selectedRepayments.map(r => r.id),
           totalAmount: total,
-          pendingAmount: this.calculateSelectedTotal('pendingAmount'),
+          remainingAmount: this.calculateSelectedTotal('remainingAmount'),
           taxAmount: this.calculateSelectedTotal('taxAmount')
         }).then(() => {
           this.$message.success(`已成功提交 ${count} 条记录的开票申请`)

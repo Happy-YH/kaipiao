@@ -177,21 +177,24 @@ export default {
   },
   methods: {
     loadData() {
-      this.$http.post('/api/tax-classifications/search', {
-        ...this.searchForm,
-        page: this.currentPage,
-        size: this.pageSize
-      }).then(res => {
-        this.tableData = res.data.records || res.data
-        this.total = res.data.total || this.tableData.length
+      this.$http.get('/tax-classifications').then(res => {
+        let list = res.data || []
+        // 前端过滤
+        if (this.searchForm.taxCode) {
+          list = list.filter(t => t.taxCode && t.taxCode.includes(this.searchForm.taxCode))
+        }
+        if (this.searchForm.feeType) {
+          list = list.filter(t => t.feeType === this.searchForm.feeType)
+        }
+        if (this.searchForm.status) {
+          list = list.filter(t => (t.status === 1 ? 'ACTIVE' : 'INACTIVE') === this.searchForm.status)
+        }
+        this.total = list.length
+        const start = (this.currentPage - 1) * this.pageSize
+        this.tableData = list.slice(start, start + this.pageSize)
       }).catch(() => {
-        this.tableData = [
-          { id: 1, taxCode: '30601', taxName: '贷款服务', feeType: 'INTEREST', taxRate: 6, description: '各种占用、拆借资金取得的收入', status: 'ACTIVE' },
-          { id: 2, taxCode: '30602', taxName: '直接收费金融服务', feeType: 'FEE', taxRate: 6, description: '提供货币兑换等金融服务', status: 'ACTIVE' },
-          { id: 3, taxCode: '30603', taxName: '保险服务', feeType: 'OTHER', taxRate: 6, description: '人身保险和财产保险服务', status: 'ACTIVE' },
-          { id: 4, taxCode: '30604', taxName: '金融商品转让', feeType: 'OTHER', taxRate: 6, description: '转让金融商品所有权', status: 'INACTIVE' }
-        ]
-        this.total = this.tableData.length
+        this.tableData = []
+        this.total = 0
       })
     },
     handleSearch() {
@@ -225,7 +228,8 @@ export default {
       const newStatus = row.status === 'ACTIVE' ? 'INACTIVE' : 'ACTIVE'
       const statusText = newStatus === 'ACTIVE' ? '启用' : '停用'
       this.$confirm(`确定要${statusText}税目「${row.taxName}」吗？`, '提示', { type: 'warning' }).then(() => {
-        this.$http.put(`/api/tax-classifications/${row.id}/status`, { status: newStatus }).then(() => {
+        const updateData = { ...row, status: newStatus }
+        this.$http.put(`/tax-classifications/${row.id}`, updateData).then(() => {
           this.$message.success(`${statusText}成功`)
           this.loadData()
         }).catch(() => {
@@ -237,13 +241,13 @@ export default {
       this.$refs.taxForm.validate((valid) => {
         if (valid) {
           if (this.isEdit) {
-            this.$http.put('/api/tax-classifications', this.taxForm).then(() => {
+            this.$http.put(`/tax-classifications/${this.taxForm.id}`, this.taxForm).then(() => {
               this.$message.success('更新成功')
               this.dialogVisible = false
               this.loadData()
             })
           } else {
-            this.$http.post('/api/tax-classifications', this.taxForm).then(() => {
+            this.$http.post('/tax-classifications', this.taxForm).then(() => {
               this.$message.success('创建成功')
               this.dialogVisible = false
               this.loadData()

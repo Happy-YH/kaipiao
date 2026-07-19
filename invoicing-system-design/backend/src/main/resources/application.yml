@@ -20,9 +20,11 @@ spring:
       data-locations: classpath:data.sql
 
 mybatis:
-  config-location: classpath:mybatis-config.xml
-  mapper-locations: classpath/mapper/*.xml
+  mapper-locations: classpath:mapper/*.xml
   type-aliases-package: com.example.invoice.entity
+  configuration:
+    map-underscore-to-camel-case: true
+    cache-enabled: false
 
 kingdee:
   mock:

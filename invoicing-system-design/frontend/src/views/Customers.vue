@@ -168,13 +168,20 @@ export default {
   },
   methods: {
     searchCustomers() {
-      this.$http.post('/api/customers/search', {
-        ...this.filterForm,
-        page: this.currentPage,
-        size: this.pageSize
+      this.$http.get('/customers', {
+        params: {
+          name: this.filterForm.customerName
+        }
       }).then(res => {
-        this.customers = res.data.records
-        this.total = res.data.total
+        let list = res.data || []
+        // 前端按税号过滤
+        if (this.filterForm.taxNo) {
+          list = list.filter(c => c.taxId && c.taxId.includes(this.filterForm.taxNo))
+        }
+        this.total = list.length
+        // 前端分页
+        const start = (this.currentPage - 1) * this.pageSize
+        this.customers = list.slice(start, start + this.pageSize)
       })
     },
     addCustomer() {
@@ -200,7 +207,7 @@ export default {
       this.$confirm(`确定删除客户「${customer.customerName}」吗？`, '提示', {
         type: 'warning'
       }).then(() => {
-        this.$http.delete(`/api/customers/${customer.id}`).then(() => {
+        this.$http.delete(`/customers/${customer.id}`).then(() => {
           this.$message.success('删除成功')
           this.searchCustomers()
         }).catch(err => {
@@ -212,13 +219,13 @@ export default {
       this.$refs.customerForm.validate((valid) => {
         if (valid) {
           if (this.isEdit) {
-            this.$http.put('/api/customers', this.formData).then(() => {
+            this.$http.put(`/customers/${this.formData.id}`, this.formData).then(() => {
               this.$message.success('修改成功')
               this.dialogVisible = false
               this.searchCustomers()
             })
           } else {
-            this.$http.post('/api/customers', this.formData).then(() => {
+            this.$http.post('/customers', this.formData).then(() => {
               this.$message.success('新增成功')
               this.dialogVisible = false
               this.searchCustomers()

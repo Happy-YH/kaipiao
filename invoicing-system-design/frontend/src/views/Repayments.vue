@@ -53,8 +53,9 @@
               <th>还款日期</th>
               <th>本金金额</th>
               <th>利息金额</th>
+              <th>可开票金额</th>
               <th>已开票金额</th>
-              <th>待开票金额</th>
+              <th>剩余可开票</th>
               <th>税率</th>
               <th>税额</th>
               <th>开票状态</th>
@@ -63,18 +64,19 @@
           <tbody>
             <tr v-for="(record, index) in records" :key="record.id">
               <td>{{ (currentPage - 1) * pageSize + index + 1 }}</td>
-              <td>{{ record.contractNo }}</td>
-              <td>{{ record.customerName }}</td>
-              <td>{{ record.repaymentDate }}</td>
+              <td>{{ getContractNo(record.contractId) }}</td>
+              <td>{{ getCustomerNameByContract(record.contractId) }}</td>
+              <td>{{ record.repaymentDate ? record.repaymentDate.substring(0,10) : '' }}</td>
               <td class="text-right">¥ {{ formatNumber(record.principalAmount) }}</td>
               <td class="text-right">¥ {{ formatNumber(record.interestAmount) }}</td>
+              <td class="text-right">¥ {{ formatNumber(record.taxableAmount) }}</td>
               <td class="text-right">¥ {{ formatNumber(record.invoicedAmount) }}</td>
-              <td class="text-right">¥ {{ formatNumber(record.pendingAmount) }}</td>
-              <td>{{ (record.taxRate * 100).toFixed(1) }}%</td>
+              <td class="text-right">¥ {{ formatNumber(record.remainingAmount) }}</td>
+              <td>{{ ((record.taxRate || 0) * 100).toFixed(1) }}%</td>
               <td class="text-right">¥ {{ formatNumber(record.taxAmount) }}</td>
               <td>
-                <span class="status-tag" :class="getStatusClass(record.status)">
-                  {{ getStatusText(record.status) }}
+                <span class="status-tag" :class="getStatusClass(record.invoiceStatus)">
+                  {{ getStatusText(record.invoiceStatus) }}
                 </span>
               </td>
             </tr>
@@ -159,23 +161,24 @@ export default {
   },
   methods: {
     loadCustomers() {
-      this.$http.get('/api/customers').then(res => {
+      this.$http.get('/customers').then(res => {
         this.customers = res.data
       })
     },
     loadContracts() {
-      this.$http.get('/api/loan-contracts').then(res => {
+      this.$http.get('/contracts').then(res => {
         this.contracts = res.data
       })
     },
     searchRecords() {
-      this.$http.post('/api/repayment-records/search', {
-        ...this.filterForm,
-        page: this.currentPage,
-        size: this.pageSize
-      }).then(res => {
-        this.records = res.data.records
-        this.total = res.data.total
+      const params = {}
+      if (this.filterForm.customerId) params.customerId = this.filterForm.customerId
+      if (this.filterForm.invoiceStatus) params.status = this.filterForm.invoiceStatus
+      this.$http.get('/repayments', { params }).then(res => {
+        let list = res.data || []
+        this.total = list.length
+        const start = (this.currentPage - 1) * this.pageSize
+        this.records = list.slice(start, start + this.pageSize)
       })
     },
     addRecord() {
@@ -191,7 +194,7 @@ export default {
     submitForm() {
       this.$refs.recordForm.validate((valid) => {
         if (valid) {
-          this.$http.post('/api/repayment-records', this.formData).then(() => {
+          this.$http.post('/repayments', this.formData).then(() => {
             this.$message.success('新增成功')
             this.dialogVisible = false
             this.searchRecords()
@@ -200,23 +203,34 @@ export default {
       })
     },
     formatNumber(num) {
-      return num.toLocaleString('zh-CN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+      if (num === null || num === undefined || num === '') return '0.00'
+      return Number(num).toLocaleString('zh-CN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+    },
+    getContractNo(contractId) {
+      const c = this.contracts.find(c => c.id === contractId)
+      return c ? c.contractNo : '-'
+    },
+    getCustomerNameByContract(contractId) {
+      const c = this.contracts.find(c => c.id === contractId)
+      if (!c) return '-'
+      const cust = this.customers.find(cu => cu.id === c.customerId)
+      return cust ? cust.customerName : '-'
     },
     getStatusText(status) {
       const map = {
         'UNINVOICED': '未开票',
-        'PARTIAL': '部分开票',
+        'PARTIAL_INVOICED': '部分开票',
         'INVOICED': '已开票',
-        'RED_INVOICED': '已红冲'
+        'RED_CANCELLED': '已红冲'
       }
       return map[status] || status
     },
     getStatusClass(status) {
       const map = {
         'UNINVOICED': 'warning',
-        'PARTIAL': 'info',
+        'PARTIAL_INVOICED': 'info',
         'INVOICED': 'success',
-        'RED_INVOICED': 'danger'
+        'RED_CANCELLED': 'danger'
       }
       return map[status] || ''
     },
